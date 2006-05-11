@@ -44,6 +44,7 @@ CFLAGS    = -O2 -Wall -Wno-parentheses -I../kernel/2.4/can -fno-strict-aliasing
 
 PROGRAMS_GPL = 	tst-raw		\
 		tst-raw-filter	\
+		tst-err		\
 		tst-raw-sendto	\
 		tst-bcm-cycle 	\
 		tst-bcm-tx_read	\
