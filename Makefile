@@ -38,11 +38,11 @@
 #  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
 #  DAMAGE.
 #
-#  Send feedback to <llcf@volkswagen.de>
+#  Send feedback to <socketcan-users@lists.berlios.de>
 
 CFLAGS    = -O2 -Wall -Wno-parentheses -I../kernel/2.4/can -fno-strict-aliasing
 
-PROGRAMS_GPL = 	tst-raw		\
+PROGRAMS = 	tst-raw		\
 		tst-raw-filter	\
 		tst-err		\
 		tst-raw-sendto	\
@@ -55,20 +55,10 @@ PROGRAMS_GPL = 	tst-raw		\
 		tst-proc	\
 		canecho
 
-PROGRAMS_VW = 	tp20-client	\
-		tp20-server	\
-		tp16-client	\
-		tp16-server
-
-default: all-gpl
-
-all: all-gpl all-vw
-
-all-gpl: $(PROGRAMS_GPL)
-all-vw:  $(PROGRAMS_VW)
+all: $(PROGRAMS)
 
 clean:
-	rm -f $(PROGRAMS_GPL) $(PROGRAMS_VW)
+	rm -f $(PROGRAMS)
 
 distclean:
-	rm -f $(PROGRAMS_GPL) $(PROGRAMS_VW) *~
+	rm -f $(PROGRAMS) *~
