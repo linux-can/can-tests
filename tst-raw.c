@@ -70,11 +70,34 @@ int main(int argc, char **argv)
     int ifindex;
     int opt;
 
-    while ((opt = getopt(argc, argv, "i:")) != -1) {
+    /* sockopt test */
+    int loopback = 0;
+    int set_loopback = 0;
+    int recv_own_msgs = 0;
+    int set_recv_own_msgs = 0;
+    int send_one_frame = 0;
+
+    while ((opt = getopt(argc, argv, "i:l:r:s")) != -1) {
         switch (opt) {
+
         case 'i':
 	    ifname = optarg;
             break;
+
+        case 'l':
+	    loopback = atoi(optarg);
+	    set_loopback = 1;
+            break;
+
+        case 'r':
+	    recv_own_msgs = atoi(optarg);
+	    set_recv_own_msgs = 1;
+            break;
+
+        case 's':
+	    send_one_frame = 1;
+            break;
+
         default:
             fprintf(stderr, "Unknown option %c\n", opt);
             break;
@@ -98,6 +121,12 @@ int main(int argc, char **argv)
 
     setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, sizeof(rfilter));
 
+    if(set_loopback)
+	  setsockopt(s, SOL_CAN_RAW, CAN_RAW_LOOPBACK, &loopback, sizeof(loopback));
+
+    if(set_recv_own_msgs)
+      setsockopt(s, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS, &recv_own_msgs, sizeof(recv_own_msgs));
+
     strcpy(ifr.ifr_name, ifname);
     ioctl(s, SIOCGIFINDEX, &ifr);
     ifindex = ifr.ifr_ifindex;
@@ -109,6 +138,16 @@ int main(int argc, char **argv)
       perror("bind");
       return 1;
     }
+
+	if(send_one_frame) {
+
+	  frame.can_id  = 0x123;
+	  frame.can_dlc = 2;
+	  frame.data[0] = 0x11;
+	  frame.data[1] = 0x22;
+
+	  nbytes = write(s, &frame, sizeof(struct can_frame));
+	}
 
     while (1) {
 
