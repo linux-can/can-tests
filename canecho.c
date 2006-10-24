@@ -57,8 +57,9 @@
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <sys/uio.h>
+#include <net/if.h>
 
-#include "af_can.h"
+#include <linux/can.h>
 
 extern int optind, opterr, optopt;
 

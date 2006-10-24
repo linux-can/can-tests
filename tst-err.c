@@ -54,10 +54,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
+#include <net/if.h>
 
-#include "af_can.h"
-#include "raw.h"
-#include "can_error.h"
+#include <linux/can.h>
+#include <linux/can/raw.h>
+#include <linux/can/error.h>
 
 int main(int argc, char **argv)
 {

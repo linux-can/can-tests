@@ -55,9 +55,10 @@
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <sys/uio.h>
+#include <net/if.h>
 
-#include "af_can.h"
-#include "bcm.h"
+#include <linux/can.h>
+#include <linux/can/bcm.h>
 
 #define U64_DATA(p) (*(unsigned long long*)(p)->data)
 
