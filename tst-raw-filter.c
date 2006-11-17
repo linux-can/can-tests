@@ -73,19 +73,23 @@ int main(int argc, char **argv)
     int ifindex;
     int opt;
     int nfilters = 0;
+    int deflt = 0;
 
-    while ((opt = getopt(argc, argv, "i:f:")) != -1) {
+    while ((opt = getopt(argc, argv, "i:f:d")) != -1) {
         switch (opt) {
-        case 'i':
+        case 'i': /* specify different interface than default */
 	    ifname = optarg;
             break;
-        case 'f':
+        case 'd': /* use default settings from CAN_RAW socket */ 
+	    deflt = 1;
+            break;
+        case 'f': /* add this filter can_id:can_mask */
 	    if (nfilters >= MAXFILTERS) {
 		fputs("too many filters\n", stderr);
 		break;
 	    }
-	    rfilter[nfilters].can_id = strtol(strtok(optarg, ":"), NULL, 0);
-	    rfilter[nfilters].can_mask = strtol(strtok(NULL, ":"), NULL, 0);
+	    rfilter[nfilters].can_id = strtol(strtok(optarg, ":"), NULL, 16);
+	    rfilter[nfilters].can_mask = strtol(strtok(NULL, ":"), NULL, 16);
 	    nfilters++;
             break;
         default:
@@ -100,9 +104,13 @@ int main(int argc, char **argv)
       return 1;
     }
 
-    if (nfilters > 0)
+    if (deflt) {
+	printf("%s: using CAN_RAW socket default filter.\n", argv[0]);
+    } else {
+	printf("%s: setting %d CAN filter(s).\n", argv[0], nfilters);
 	setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter,
 		   sizeof(*rfilter) * nfilters);
+    }
 
     if (strcmp(ifname, "any") == 0)
 	ifindex = 0;
