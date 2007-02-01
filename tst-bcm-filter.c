@@ -176,6 +176,15 @@ int main(int argc, char **argv)
 	     rxmsg.frame[0].can_id);
     }
 
+    txmsg.msg_head.opcode  = RX_DELETE;
+    txmsg.msg_head.can_id  = 0x042; /* everything we need for RX_DELETE */
+
+    printf("<*>Writing RX_DELETE for can_id <%03X> for RX_SETUP with growing nframes\n",
+	   txmsg.msg_head.can_id);
+
+    if (write(s, &txmsg, sizeof(txmsg)) < 0)
+      perror("write");
+
     txmsg.msg_head.opcode  = RX_SETUP;
     txmsg.msg_head.can_id  = 0x042;
     txmsg.msg_head.flags   = SETTIMER|RX_CHECK_DLC;
@@ -297,6 +306,15 @@ int main(int argc, char **argv)
       printf("<9>Received correct RX_CHANGED message for can_id <%03X> >> OK!\n",
 	     rxmsg.frame[0].can_id);
     }
+
+    txmsg.msg_head.opcode  = RX_DELETE;
+    txmsg.msg_head.can_id  = 0x042; /* everything we need for RX_DELETE */
+
+    printf("<*>Writing RX_DELETE for can_id <%03X> for RX_SETUP with growing nframes\n",
+	   txmsg.msg_head.can_id);
+
+    if (write(s, &txmsg, sizeof(txmsg)) < 0)
+      perror("write");
 
     /* no problems ;-) but NOW we try MUX messages ... and timeouts */
 

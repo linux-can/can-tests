@@ -1,7 +1,7 @@
 #
 #  $Id$
 #
-#  Copyright (c) 2002-2005 Volkswagen Group Electronic Research
+#  Copyright (c) 2002-2007 Volkswagen Group Electronic Research
 #  All rights reserved.
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -43,17 +43,19 @@
 CFLAGS    = -O2 -Wall -Wno-parentheses -I../kernel/2.6/include \
 	    -fno-strict-aliasing
 
-PROGRAMS = 	tst-raw		\
-		tst-raw-filter	\
-		tst-err		\
-		tst-raw-sendto	\
-		tst-bcm-cycle 	\
-		tst-bcm-tx_read	\
-		tst-bcm-rtr	\
-		tst-bcm-single	\
-		tst-bcm-filter	\
-		tst-bcm-throttle\
-		tst-proc	\
+PROGRAMS = 	tst-raw		  \
+		tst-raw-filter	  \
+		tst-err		  \
+		tst-raw-sendto	  \
+		tst-bcm-cycle 	  \
+		tst-bcm-tx_read	  \
+		tst-bcm-rtr	  \
+		tst-bcm-single	  \
+		tst-bcm-filter	  \
+		tst-bcm-throttle  \
+		tst-bcm-rx-sendto \
+		tst-bcm-tx-sendto \
+		tst-proc	  \
 		canecho
 
 all: $(PROGRAMS)
