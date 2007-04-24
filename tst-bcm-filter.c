@@ -105,10 +105,11 @@ int main(int argc, char **argv)
     if (write(s, &txmsg, sizeof(txmsg)) < 0)
       perror("write");
 
+    /* test for RX_DELETE */
     txmsg.msg_head.opcode  = RX_DELETE;
     txmsg.msg_head.can_id  = 0x042; /* everything we need for RX_DELETE */
 
-    printf("<*>Writing RX_DELETE with RX_FILTER_ID for can_id <%03X>\n",
+    printf("<*>Writing RX_DELETE for can_id <%03X>\n",
 	   txmsg.msg_head.can_id);
 
     if (write(s, &txmsg, sizeof(txmsg)) < 0)
@@ -176,10 +177,11 @@ int main(int argc, char **argv)
 	     rxmsg.frame[0].can_id);
     }
 
+    /* growing number of nframes => RX_DELETE instead of simple update */
     txmsg.msg_head.opcode  = RX_DELETE;
     txmsg.msg_head.can_id  = 0x042; /* everything we need for RX_DELETE */
 
-    printf("<*>Writing RX_DELETE for can_id <%03X> for RX_SETUP with growing nframes\n",
+    printf("<*>Writing RX_DELETE for can_id <%03X>\n",
 	   txmsg.msg_head.can_id);
 
     if (write(s, &txmsg, sizeof(txmsg)) < 0)
