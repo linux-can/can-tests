@@ -77,8 +77,9 @@ int main(int argc, char **argv)
     int recv_own_msgs = 0;
     int set_recv_own_msgs = 0;
     int send_one_frame = 0;
+    int ignore_errors = 0;
 
-    while ((opt = getopt(argc, argv, "i:l:r:s")) != -1) {
+    while ((opt = getopt(argc, argv, "i:l:r:se")) != -1) {
         switch (opt) {
 
         case 'i':
@@ -97,6 +98,10 @@ int main(int argc, char **argv)
 
         case 's':
 	    send_one_frame = 1;
+            break;
+
+        case 'e':
+	    ignore_errors = 1;
             break;
 
         default:
@@ -154,7 +159,8 @@ int main(int argc, char **argv)
 
 	if ((nbytes = read(s, &frame, sizeof(struct can_frame))) < 0) {
 	    perror("read");
-	    return 1;
+	    if (!ignore_errors)
+	        return 1;
 	} else if (nbytes < sizeof(struct can_frame)) {
 	    fprintf(stderr, "read: incomplete CAN frame\n");
 	    return 1;
