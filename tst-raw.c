@@ -71,8 +71,8 @@ int main(int argc, char **argv)
     int opt;
 
     /* sockopt test */
-    int loopback = 0;
-    int set_loopback = 0;
+    int echo = 0;
+    int set_echo = 0;
     int recv_own_msgs = 0;
     int set_recv_own_msgs = 0;
     int send_one_frame = 0;
@@ -86,8 +86,8 @@ int main(int argc, char **argv)
             break;
 
         case 'l':
-	    loopback = atoi(optarg);
-	    set_loopback = 1;
+	    echo = atoi(optarg);
+	    set_echo = 1;
             break;
 
         case 'r':
@@ -126,8 +126,8 @@ int main(int argc, char **argv)
 
     setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, sizeof(rfilter));
 
-    if(set_loopback)
-	  setsockopt(s, SOL_CAN_RAW, CAN_RAW_LOOPBACK, &loopback, sizeof(loopback));
+    if(set_echo)
+	  setsockopt(s, SOL_CAN_RAW, CAN_RAW_ECHO, &echo, sizeof(echo));
 
     if(set_recv_own_msgs)
       setsockopt(s, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS, &recv_own_msgs, sizeof(recv_own_msgs));
