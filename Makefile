@@ -50,6 +50,7 @@ PROGRAMS = 	tst-raw		  \
 		tst-err		  \
 		tst-raw-sendto	  \
 		tst-bcm-cycle 	  \
+		tst-bcm-server 	  \
 		tst-bcm-tx_read	  \
 		tst-bcm-rtr	  \
 		tst-bcm-single	  \
