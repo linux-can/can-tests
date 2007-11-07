@@ -63,6 +63,9 @@ PROGRAMS = 	tst-raw		  \
 
 all: $(PROGRAMS)
 
+install:
+	cp -f $(PROGRAMS) /usr/local/bin
+
 clean:
 	rm -f $(PROGRAMS)
 
