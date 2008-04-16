@@ -58,6 +58,7 @@ PROGRAMS = 	tst-raw		  \
 		tst-bcm-throttle  \
 		tst-bcm-rx-sendto \
 		tst-bcm-tx-sendto \
+		tst-bcm-dump	  \
 		tst-proc	  \
 		canecho
 
