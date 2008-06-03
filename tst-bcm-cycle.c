@@ -63,75 +63,75 @@
 
 int main(int argc, char **argv)
 {
-    int s;
-    struct sockaddr_can addr;
-    struct ifreq ifr;
+	int s;
+	struct sockaddr_can addr;
+	struct ifreq ifr;
 
-    struct {
-      struct bcm_msg_head msg_head;
-      struct can_frame frame[4];
-    } msg;
+	struct {
+		struct bcm_msg_head msg_head;
+		struct can_frame frame[4];
+	} msg;
 
-    if ((s = socket(PF_CAN, SOCK_DGRAM, CAN_BCM)) < 0) {
-	perror("socket");
-	return 1;
-    }
+	if ((s = socket(PF_CAN, SOCK_DGRAM, CAN_BCM)) < 0) {
+		perror("socket");
+		return 1;
+	}
 
-    addr.can_family = PF_CAN;
-    strcpy(ifr.ifr_name, "vcan2");
-    ioctl(s, SIOCGIFINDEX, &ifr);
-    addr.can_ifindex = ifr.ifr_ifindex;
+	addr.can_family = PF_CAN;
+	strcpy(ifr.ifr_name, "vcan2");
+	ioctl(s, SIOCGIFINDEX, &ifr);
+	addr.can_ifindex = ifr.ifr_ifindex;
 
-    if (connect(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-	perror("connect");
-	return 1;
-    }
+	if (connect(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+		perror("connect");
+		return 1;
+	}
 
-    msg.msg_head.opcode  = TX_SETUP;
-    msg.msg_head.can_id  = 0x42;
-    msg.msg_head.flags   = SETTIMER|STARTTIMER;
-    msg.msg_head.nframes = 1;
-    msg.msg_head.count = 10;
-    msg.msg_head.ival1.tv_sec = 1;
-    msg.msg_head.ival1.tv_usec = 0;
-    msg.msg_head.ival2.tv_sec = 0;
-    msg.msg_head.ival2.tv_usec = 0;
-    msg.frame[0].can_id    = 0x42;
-    msg.frame[0].can_dlc   = 8;
-    U64_DATA(&msg.frame[0]) = (__u64) 0xdeadbeefdeadbeefULL;
+	msg.msg_head.opcode  = TX_SETUP;
+	msg.msg_head.can_id  = 0x42;
+	msg.msg_head.flags   = SETTIMER|STARTTIMER;
+	msg.msg_head.nframes = 1;
+	msg.msg_head.count = 10;
+	msg.msg_head.ival1.tv_sec = 1;
+	msg.msg_head.ival1.tv_usec = 0;
+	msg.msg_head.ival2.tv_sec = 0;
+	msg.msg_head.ival2.tv_usec = 0;
+	msg.frame[0].can_id    = 0x42;
+	msg.frame[0].can_dlc   = 8;
+	U64_DATA(&msg.frame[0]) = (__u64) 0xdeadbeefdeadbeefULL;
 
-    if (write(s, &msg, sizeof(msg)) < 0)
-      perror("write");
+	if (write(s, &msg, sizeof(msg)) < 0)
+		perror("write");
 
-    printf("Press any key to stop the cycle ...\n");
+	printf("Press any key to stop the cycle ...\n");
 
-    getchar();
+	getchar();
 
-    msg.msg_head.opcode  = TX_SETUP;
-    msg.msg_head.can_id  = 0x42;
-    msg.msg_head.flags   = SETTIMER|STARTTIMER;
-    msg.msg_head.nframes = 1;
-    msg.msg_head.count = 0;
-    msg.msg_head.ival1.tv_sec = 0;
-    msg.msg_head.ival1.tv_usec = 0;
-    msg.msg_head.ival2.tv_sec = 0;
-    msg.msg_head.ival2.tv_usec = 0;
-    msg.frame[0].can_id    = 0x42;
-    msg.frame[0].can_dlc   = 8;
-    U64_DATA(&msg.frame[0]) = (__u64) 0xdeadbeefdeadbeefULL;
+	msg.msg_head.opcode  = TX_SETUP;
+	msg.msg_head.can_id  = 0x42;
+	msg.msg_head.flags   = SETTIMER|STARTTIMER;
+	msg.msg_head.nframes = 1;
+	msg.msg_head.count = 0;
+	msg.msg_head.ival1.tv_sec = 0;
+	msg.msg_head.ival1.tv_usec = 0;
+	msg.msg_head.ival2.tv_sec = 0;
+	msg.msg_head.ival2.tv_usec = 0;
+	msg.frame[0].can_id    = 0x42;
+	msg.frame[0].can_dlc   = 8;
+	U64_DATA(&msg.frame[0]) = (__u64) 0xdeadbeefdeadbeefULL;
 
-    if (write(s, &msg, sizeof(msg)) < 0)
-      perror("write");
+	if (write(s, &msg, sizeof(msg)) < 0)
+		perror("write");
 
-    printf("Press any key to close the socket ...\n");
+	printf("Press any key to close the socket ...\n");
 
-    getchar();
+	getchar();
 
-    close(s);
+	close(s);
 
-    printf("Press any key to end the program ...\n");
+	printf("Press any key to end the program ...\n");
 
-    getchar();
+	getchar();
 
-    return 0;
+	return 0;
 }

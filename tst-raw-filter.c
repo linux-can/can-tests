@@ -62,104 +62,104 @@
 
 int main(int argc, char **argv)
 {
-    int s;
-    struct sockaddr_can addr;
-    struct can_filter rfilter[MAXFILTERS];
-    struct can_frame frame;
-    int nbytes, i;
-    struct ifreq ifr;
-    char *ifname = "any";
-    int ifindex;
-    int opt;
-    int nfilters = 0;
-    int deflt = 0;
+	int s;
+	struct sockaddr_can addr;
+	struct can_filter rfilter[MAXFILTERS];
+	struct can_frame frame;
+	int nbytes, i;
+	struct ifreq ifr;
+	char *ifname = "any";
+	int ifindex;
+	int opt;
+	int nfilters = 0;
+	int deflt = 0;
 
-    while ((opt = getopt(argc, argv, "i:f:d")) != -1) {
-        switch (opt) {
-        case 'i': /* specify different interface than default */
-	    ifname = optarg;
-            break;
-        case 'd': /* use default settings from CAN_RAW socket */ 
-	    deflt = 1;
-            break;
-        case 'f': /* add this filter can_id:can_mask */
-	    if (nfilters >= MAXFILTERS) {
-		fputs("too many filters\n", stderr);
-		break;
-	    }
-	    rfilter[nfilters].can_id = strtol(strtok(optarg, ":"), NULL, 16);
-	    rfilter[nfilters].can_mask = strtol(strtok(NULL, ":"), NULL, 16);
-	    nfilters++;
-            break;
-        default:
-            fprintf(stderr, "Unknown option %c\n", opt);
-            break;
-        }
-    }
-
-
-    if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
-      perror("socket");
-      return 1;
-    }
-
-    if (deflt) {
-	printf("%s: using CAN_RAW socket default filter.\n", argv[0]);
-    } else {
-	printf("%s: setting %d CAN filter(s).\n", argv[0], nfilters);
-	setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter,
-		   sizeof(*rfilter) * nfilters);
-    }
-
-    if (strcmp(ifname, "any") == 0)
-	ifindex = 0;
-    else {
-	strcpy(ifr.ifr_name, ifname);
-	ioctl(s, SIOCGIFINDEX, &ifr);
-	ifindex = ifr.ifr_ifindex;
-    }
-
-    addr.can_family = AF_CAN;
-    addr.can_ifindex = ifindex;
-
-    if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-      perror("bind");
-      return 1;
-    }
-
-    while (1) {
-	socklen_t len = sizeof(addr);
-	nbytes = recvfrom(s, &frame, sizeof(struct can_frame),
-			  0, (struct sockaddr*)&addr, &len);
-	if (nbytes < 0) {
-	    perror("read");
-	    return 1;
-	} else if (nbytes < sizeof(struct can_frame)) {
-	    fprintf(stderr, "read: incomplete CAN frame from iface %d\n",
-		    addr.can_ifindex);
-	    return 1;
-	} else {
-	    ifr.ifr_ifindex = addr.can_ifindex;
-	    ioctl(s, SIOCGIFNAME, &ifr);
-	    printf(" %-5s ", ifr.ifr_name);
-	    if (frame.can_id & CAN_EFF_FLAG)
-		printf("%8X  ", frame.can_id & CAN_EFF_MASK);
-	    else
-		printf("%3X  ", frame.can_id & CAN_SFF_MASK);
-	    
-	    printf("[%d] ", frame.can_dlc);
-	    
-	    for (i = 0; i < frame.can_dlc; i++) {
-		printf("%02X ", frame.data[i]);
-	    }
-	    if (frame.can_id & CAN_RTR_FLAG)
-		printf("remote request");
-	    printf("\n");
-	    fflush(stdout);
+	while ((opt = getopt(argc, argv, "i:f:d")) != -1) {
+		switch (opt) {
+		case 'i': /* specify different interface than default */
+			ifname = optarg;
+			break;
+		case 'd': /* use default settings from CAN_RAW socket */ 
+			deflt = 1;
+			break;
+		case 'f': /* add this filter can_id:can_mask */
+			if (nfilters >= MAXFILTERS) {
+				fputs("too many filters\n", stderr);
+				break;
+			}
+			rfilter[nfilters].can_id = strtol(strtok(optarg, ":"), NULL, 16);
+			rfilter[nfilters].can_mask = strtol(strtok(NULL, ":"), NULL, 16);
+			nfilters++;
+			break;
+		default:
+			fprintf(stderr, "Unknown option %c\n", opt);
+			break;
+		}
 	}
-    }
 
-    close(s);
 
-    return 0;
+	if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
+		perror("socket");
+		return 1;
+	}
+
+	if (deflt) {
+		printf("%s: using CAN_RAW socket default filter.\n", argv[0]);
+	} else {
+		printf("%s: setting %d CAN filter(s).\n", argv[0], nfilters);
+		setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter,
+			   sizeof(*rfilter) * nfilters);
+	}
+
+	if (strcmp(ifname, "any") == 0)
+		ifindex = 0;
+	else {
+		strcpy(ifr.ifr_name, ifname);
+		ioctl(s, SIOCGIFINDEX, &ifr);
+		ifindex = ifr.ifr_ifindex;
+	}
+
+	addr.can_family = AF_CAN;
+	addr.can_ifindex = ifindex;
+
+	if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+		perror("bind");
+		return 1;
+	}
+
+	while (1) {
+		socklen_t len = sizeof(addr);
+		nbytes = recvfrom(s, &frame, sizeof(struct can_frame),
+				  0, (struct sockaddr*)&addr, &len);
+		if (nbytes < 0) {
+			perror("read");
+			return 1;
+		} else if (nbytes < sizeof(struct can_frame)) {
+			fprintf(stderr, "read: incomplete CAN frame from iface %d\n",
+				addr.can_ifindex);
+			return 1;
+		} else {
+			ifr.ifr_ifindex = addr.can_ifindex;
+			ioctl(s, SIOCGIFNAME, &ifr);
+			printf(" %-5s ", ifr.ifr_name);
+			if (frame.can_id & CAN_EFF_FLAG)
+				printf("%8X  ", frame.can_id & CAN_EFF_MASK);
+			else
+				printf("%3X  ", frame.can_id & CAN_SFF_MASK);
+	    
+			printf("[%d] ", frame.can_dlc);
+	    
+			for (i = 0; i < frame.can_dlc; i++) {
+				printf("%02X ", frame.data[i]);
+			}
+			if (frame.can_id & CAN_RTR_FLAG)
+				printf("remote request");
+			printf("\n");
+			fflush(stdout);
+		}
+	}
+
+	close(s);
+
+	return 0;
 }

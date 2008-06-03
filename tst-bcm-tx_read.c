@@ -63,96 +63,96 @@
 
 int main(int argc, char **argv)
 {
-    int s,i,nbytes;
-    struct sockaddr_can addr;
-    struct ifreq ifr;
+	int s,i,nbytes;
+	struct sockaddr_can addr;
+	struct ifreq ifr;
 
-    struct {
-      struct bcm_msg_head msg_head;
-      struct can_frame frame[4];
-    } msg;
+	struct {
+		struct bcm_msg_head msg_head;
+		struct can_frame frame[4];
+	} msg;
 
-    if ((s = socket(PF_CAN, SOCK_DGRAM, CAN_BCM)) < 0) {
-	perror("socket");
-	return 1;
-    }
+	if ((s = socket(PF_CAN, SOCK_DGRAM, CAN_BCM)) < 0) {
+		perror("socket");
+		return 1;
+	}
 
-    addr.can_family = PF_CAN;
-    strcpy(ifr.ifr_name, "vcan2");
-    ioctl(s, SIOCGIFINDEX, &ifr);
-    addr.can_ifindex = ifr.ifr_ifindex;
+	addr.can_family = PF_CAN;
+	strcpy(ifr.ifr_name, "vcan2");
+	ioctl(s, SIOCGIFINDEX, &ifr);
+	addr.can_ifindex = ifr.ifr_ifindex;
 
-    if (connect(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-	perror("connect");
-	return 1;
-    }
+	if (connect(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+		perror("connect");
+		return 1;
+	}
 
-    msg.msg_head.opcode  = TX_SETUP;
-    msg.msg_head.can_id  = 0x42;
-    msg.msg_head.flags   = SETTIMER|STARTTIMER|TX_CP_CAN_ID|TX_COUNTEVT;
-    msg.msg_head.nframes = 1;
-    msg.msg_head.count = 2;
-    msg.msg_head.ival1.tv_sec = 3;
-    msg.msg_head.ival1.tv_usec = 0;
-    msg.msg_head.ival2.tv_sec = 5;
-    msg.msg_head.ival2.tv_usec = 0;
-    msg.frame[0].can_id    = 0xAA;
-    msg.frame[0].can_dlc   = 8;
-    U64_DATA(&msg.frame[0]) = (__u64) 0xdeadbeefdeadbeefULL;
+	msg.msg_head.opcode  = TX_SETUP;
+	msg.msg_head.can_id  = 0x42;
+	msg.msg_head.flags   = SETTIMER|STARTTIMER|TX_CP_CAN_ID|TX_COUNTEVT;
+	msg.msg_head.nframes = 1;
+	msg.msg_head.count = 2;
+	msg.msg_head.ival1.tv_sec = 3;
+	msg.msg_head.ival1.tv_usec = 0;
+	msg.msg_head.ival2.tv_sec = 5;
+	msg.msg_head.ival2.tv_usec = 0;
+	msg.frame[0].can_id    = 0xAA;
+	msg.frame[0].can_dlc   = 8;
+	U64_DATA(&msg.frame[0]) = (__u64) 0xdeadbeefdeadbeefULL;
 
-    if (write(s, &msg, sizeof(msg)) < 0)
-      perror("write");
+	if (write(s, &msg, sizeof(msg)) < 0)
+		perror("write");
 
-    printf("Press any key to stop the cycle ...\n");
+	printf("Press any key to stop the cycle ...\n");
 
-    getchar();
+	getchar();
 
-    msg.msg_head.opcode  = TX_SETUP;
-    msg.msg_head.can_id  = 0x42;
-    msg.msg_head.flags   = SETTIMER|STARTTIMER|TX_CP_CAN_ID;
-    msg.msg_head.nframes = 1;
-    msg.msg_head.count = 0;
-    msg.msg_head.ival1.tv_sec = 0;
-    msg.msg_head.ival1.tv_usec = 0;
-    msg.msg_head.ival2.tv_sec = 0;
-    msg.msg_head.ival2.tv_usec = 0;
-    msg.frame[0].can_id    = 0xAA;
-    msg.frame[0].can_dlc   = 8;
-    U64_DATA(&msg.frame[0]) = (__u64) 0xdeadbeefdeadbeefULL;
+	msg.msg_head.opcode  = TX_SETUP;
+	msg.msg_head.can_id  = 0x42;
+	msg.msg_head.flags   = SETTIMER|STARTTIMER|TX_CP_CAN_ID;
+	msg.msg_head.nframes = 1;
+	msg.msg_head.count = 0;
+	msg.msg_head.ival1.tv_sec = 0;
+	msg.msg_head.ival1.tv_usec = 0;
+	msg.msg_head.ival2.tv_sec = 0;
+	msg.msg_head.ival2.tv_usec = 0;
+	msg.frame[0].can_id    = 0xAA;
+	msg.frame[0].can_dlc   = 8;
+	U64_DATA(&msg.frame[0]) = (__u64) 0xdeadbeefdeadbeefULL;
 
-    if (write(s, &msg, sizeof(msg)) < 0)
-      perror("write");
+	if (write(s, &msg, sizeof(msg)) < 0)
+		perror("write");
 
-    printf("Press any key to read the entry ...\n");
+	printf("Press any key to read the entry ...\n");
 
-    getchar();
+	getchar();
 
-    msg.msg_head.opcode  = TX_READ;
-    msg.msg_head.can_id  = 0x42;
-    msg.msg_head.nframes = 0;
+	msg.msg_head.opcode  = TX_READ;
+	msg.msg_head.can_id  = 0x42;
+	msg.msg_head.nframes = 0;
 
-    if (write(s, &msg, sizeof(msg)) < 0)
-      perror("write");
+	if (write(s, &msg, sizeof(msg)) < 0)
+		perror("write");
 
-    printf("Press any key to read from the socket ...\n");
+	printf("Press any key to read from the socket ...\n");
 
-    getchar();
+	getchar();
 
-    if ((nbytes = read(s, &msg, sizeof(msg))) < 0)
-      perror("read");
-    for (i = 0; i < nbytes; i++)
-	printf(" %02x", ((unsigned char*)&msg)[i]);
-    putchar('\n');
+	if ((nbytes = read(s, &msg, sizeof(msg))) < 0)
+		perror("read");
+	for (i = 0; i < nbytes; i++)
+		printf(" %02x", ((unsigned char*)&msg)[i]);
+	putchar('\n');
 
-    printf("Press any key to close the socket ...\n");
+	printf("Press any key to close the socket ...\n");
 
-    getchar();
+	getchar();
 
-    close(s);
+	close(s);
 
-    printf("Press any key to end the program ...\n");
+	printf("Press any key to end the program ...\n");
 
-    getchar();
+	getchar();
 
-    return 0;
+	return 0;
 }

@@ -61,102 +61,102 @@
 
 int main(int argc, char **argv)
 {
-    int s,nbytes;
-    struct sockaddr_can addr;
-    struct ifreq ifr;
+	int s,nbytes;
+	struct sockaddr_can addr;
+	struct ifreq ifr;
 
-    struct timeval tv;
+	struct timeval tv;
 
-    struct {
-      struct bcm_msg_head msg_head;
-      struct can_frame frame;
-    } txmsg, rxmsg;
+	struct {
+		struct bcm_msg_head msg_head;
+		struct can_frame frame;
+	} txmsg, rxmsg;
 
-    if ((s = socket(PF_CAN, SOCK_DGRAM, CAN_BCM)) < 0) {
-	perror("socket");
-	return 1;
-    }
-
-    addr.can_family = PF_CAN;
-    addr.can_ifindex = 0; /* bind to 'any' device */
-
-    if (connect(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-	perror("connect");
-	return 1;
-    }
-
-    memset(&txmsg, 0, sizeof(txmsg)); /* clear timers, nframes, etc. */
-
-    txmsg.msg_head.opcode  = RX_SETUP;
-    txmsg.msg_head.can_id  = 0x123;
-    txmsg.msg_head.flags   = RX_FILTER_ID;
-
-    if (write(s, &txmsg, sizeof(txmsg)) < 0)
-      perror("write");
-
-    addr.can_family = PF_CAN;
-    strcpy(ifr.ifr_name, "vcan2");
-    ioctl(s, SIOCGIFINDEX, &ifr);
-    addr.can_ifindex = ifr.ifr_ifindex;
-
-    txmsg.msg_head.opcode  = RX_SETUP;
-    txmsg.msg_head.can_id  = 0x321;
-    txmsg.msg_head.flags   = RX_FILTER_ID;
-
-    if (sendto(s, &txmsg, sizeof(txmsg), 0, (struct sockaddr*)&addr, sizeof(addr)) < 0)
-      perror("sendto");
-
-    addr.can_family = PF_CAN;
-    strcpy(ifr.ifr_name, "vcan1");
-    ioctl(s, SIOCGIFINDEX, &ifr);
-    addr.can_ifindex = ifr.ifr_ifindex;
-
-    txmsg.msg_head.opcode  = RX_SETUP;
-    txmsg.msg_head.can_id  = 0x424;
-    txmsg.msg_head.flags   = RX_FILTER_ID;
-
-    if (sendto(s, &txmsg, sizeof(txmsg), 0, (struct sockaddr*)&addr, sizeof(addr)) < 0)
-      perror("sendto");
-
-    while (1) {
-	socklen_t len = sizeof(addr);
-	nbytes = recvfrom(s, &rxmsg, sizeof(rxmsg),
-			  0, (struct sockaddr*)&addr, &len);
-	if (nbytes < 0) {
-	    perror("recvfrom");
-	    return 1;
-	} else if (nbytes < sizeof(rxmsg)) {
-	    fprintf(stderr, "recvfrom: incomplete BCM message from iface %d\n",
-		    addr.can_ifindex);
-	    return 1;
-	} else {
-	    int i;
-
-	    ioctl(s, SIOCGSTAMP, &tv);
-	    printf("(%ld.%06ld) ", tv.tv_sec, tv.tv_usec);
-
-	    ifr.ifr_ifindex = addr.can_ifindex;
-	    ioctl(s, SIOCGIFNAME, &ifr);
-
-	    printf(" %-5s ", ifr.ifr_name);
-	    if (rxmsg.frame.can_id & CAN_EFF_FLAG)
-		printf("%8X  ", rxmsg.frame.can_id & CAN_EFF_MASK);
-	    else
-		printf("%3X  ", rxmsg.frame.can_id & CAN_SFF_MASK);
-	    
-	    printf("[%d] ", rxmsg.frame.can_dlc);
-	    
-	    for (i = 0; i < rxmsg.frame.can_dlc; i++) {
-		printf("%02X ", rxmsg.frame.data[i]);
-	    }
-	    if (rxmsg.frame.can_id & CAN_RTR_FLAG)
-		printf("remote request");
-	    printf("\n");
-	    fflush(stdout);
+	if ((s = socket(PF_CAN, SOCK_DGRAM, CAN_BCM)) < 0) {
+		perror("socket");
+		return 1;
 	}
-    }
 
-    close(s);
+	addr.can_family = PF_CAN;
+	addr.can_ifindex = 0; /* bind to 'any' device */
 
-    return 0;
+	if (connect(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+		perror("connect");
+		return 1;
+	}
+
+	memset(&txmsg, 0, sizeof(txmsg)); /* clear timers, nframes, etc. */
+
+	txmsg.msg_head.opcode  = RX_SETUP;
+	txmsg.msg_head.can_id  = 0x123;
+	txmsg.msg_head.flags   = RX_FILTER_ID;
+
+	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+		perror("write");
+
+	addr.can_family = PF_CAN;
+	strcpy(ifr.ifr_name, "vcan2");
+	ioctl(s, SIOCGIFINDEX, &ifr);
+	addr.can_ifindex = ifr.ifr_ifindex;
+
+	txmsg.msg_head.opcode  = RX_SETUP;
+	txmsg.msg_head.can_id  = 0x321;
+	txmsg.msg_head.flags   = RX_FILTER_ID;
+
+	if (sendto(s, &txmsg, sizeof(txmsg), 0, (struct sockaddr*)&addr, sizeof(addr)) < 0)
+		perror("sendto");
+
+	addr.can_family = PF_CAN;
+	strcpy(ifr.ifr_name, "vcan1");
+	ioctl(s, SIOCGIFINDEX, &ifr);
+	addr.can_ifindex = ifr.ifr_ifindex;
+
+	txmsg.msg_head.opcode  = RX_SETUP;
+	txmsg.msg_head.can_id  = 0x424;
+	txmsg.msg_head.flags   = RX_FILTER_ID;
+
+	if (sendto(s, &txmsg, sizeof(txmsg), 0, (struct sockaddr*)&addr, sizeof(addr)) < 0)
+		perror("sendto");
+
+	while (1) {
+		socklen_t len = sizeof(addr);
+		nbytes = recvfrom(s, &rxmsg, sizeof(rxmsg),
+				  0, (struct sockaddr*)&addr, &len);
+		if (nbytes < 0) {
+			perror("recvfrom");
+			return 1;
+		} else if (nbytes < sizeof(rxmsg)) {
+			fprintf(stderr, "recvfrom: incomplete BCM message from iface %d\n",
+				addr.can_ifindex);
+			return 1;
+		} else {
+			int i;
+
+			ioctl(s, SIOCGSTAMP, &tv);
+			printf("(%ld.%06ld) ", tv.tv_sec, tv.tv_usec);
+
+			ifr.ifr_ifindex = addr.can_ifindex;
+			ioctl(s, SIOCGIFNAME, &ifr);
+
+			printf(" %-5s ", ifr.ifr_name);
+			if (rxmsg.frame.can_id & CAN_EFF_FLAG)
+				printf("%8X  ", rxmsg.frame.can_id & CAN_EFF_MASK);
+			else
+				printf("%3X  ", rxmsg.frame.can_id & CAN_SFF_MASK);
+	    
+			printf("[%d] ", rxmsg.frame.can_dlc);
+	    
+			for (i = 0; i < rxmsg.frame.can_dlc; i++) {
+				printf("%02X ", rxmsg.frame.data[i]);
+			}
+			if (rxmsg.frame.can_id & CAN_RTR_FLAG)
+				printf("remote request");
+			printf("\n");
+			fflush(stdout);
+		}
+	}
+
+	close(s);
+
+	return 0;
 }

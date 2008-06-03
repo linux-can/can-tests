@@ -91,28 +91,28 @@ int main(int argc, char **argv)
 
 	while ((opt = getopt(argc, argv, "f:t:p:v")) != -1) {
 		switch (opt) {
-			case 'f':
-				family = atoi(optarg);
-				break;
+		case 'f':
+			family = atoi(optarg);
+			break;
 
-			case 't':
-				type = atoi(optarg);
-				break;
+		case 't':
+			type = atoi(optarg);
+			break;
 
-			case 'p':
-				proto = atoi(optarg);
-				break;
+		case 'p':
+			proto = atoi(optarg);
+			break;
 
-			case 'v':
-				verbose = 1;
-				break;
+		case 'v':
+			verbose = 1;
+			break;
 
-			case '?':
-				break;
+		case '?':
+			break;
 
-			default:
-				fprintf(stderr, "Unknown option %c\n", opt);
-				break;
+		default:
+			fprintf(stderr, "Unknown option %c\n", opt);
+			break;
 		}
 	}
 
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 	}
 	
 	printf("interface = %s, family = %d, type = %d, proto = %d\n",
-			argv[optind], family, type, proto);
+	       argv[optind], family, type, proto);
 	if ((s = socket(family, type, proto)) < 0) {
 		perror("socket");
 		return 1;

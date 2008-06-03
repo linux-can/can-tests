@@ -63,58 +63,58 @@
 
 int main(int argc, char **argv)
 {
-    int s[MAX_RAW];
-    struct sockaddr_can addr;
-    struct ifreq ifr;
-    int i,numsock;
+	int s[MAX_RAW];
+	struct sockaddr_can addr;
+	struct ifreq ifr;
+	int i,numsock;
 
-    if (argc != 2) {
-	fprintf(stderr, "Error: Wrong number of arguments. Try %s <number of created sockets>.\n", argv[0]);
-	exit(1);
-    }
-
-    numsock = atoi(argv[1]);
-
-    if (numsock >= MAX_RAW) {
-	fprintf(stderr, "Error: more than %d sockets to open (see #define MAX_RAW).\n", MAX_RAW);
-	exit(1);
-    }
-
-    printf("\ncreating %d raw sockets ... ", numsock);
-
-    if (numsock) {
-	for (i=0; i < numsock; i++) {
-	    if ((s[i] = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
-		perror("socket");
-		return 1;
-	    }
-
-	    addr.can_family = PF_CAN;
-	    strcpy(ifr.ifr_name, "vcan2");
-	    ioctl(s[i], SIOCGIFINDEX, &ifr);
-	    addr.can_ifindex = ifr.ifr_ifindex;
-
-	    if (bind(s[i], (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-		perror("connect");
-		return 1;
-	    }
+	if (argc != 2) {
+		fprintf(stderr, "Error: Wrong number of arguments. Try %s <number of created sockets>.\n", argv[0]);
+		exit(1);
 	}
-    }
 
-    printf("done.\n");
+	numsock = atoi(argv[1]);
 
-    printf("Waiting for keyboard input ...");
+	if (numsock >= MAX_RAW) {
+		fprintf(stderr, "Error: more than %d sockets to open (see #define MAX_RAW).\n", MAX_RAW);
+		exit(1);
+	}
 
-    getchar();
+	printf("\ncreating %d raw sockets ... ", numsock);
 
-    printf("closing %d raw sockets ... ", numsock);
+	if (numsock) {
+		for (i=0; i < numsock; i++) {
+			if ((s[i] = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
+				perror("socket");
+				return 1;
+			}
 
-    if (numsock)
-	for (i=0; i < numsock; i++)
-	    close(s[i]);
+			addr.can_family = PF_CAN;
+			strcpy(ifr.ifr_name, "vcan2");
+			ioctl(s[i], SIOCGIFINDEX, &ifr);
+			addr.can_ifindex = ifr.ifr_ifindex;
 
-    printf("done.\n\n");
+			if (bind(s[i], (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+				perror("connect");
+				return 1;
+			}
+		}
+	}
 
-    return 0;
+	printf("done.\n");
+
+	printf("Waiting for keyboard input ...");
+
+	getchar();
+
+	printf("closing %d raw sockets ... ", numsock);
+
+	if (numsock)
+		for (i=0; i < numsock; i++)
+			close(s[i]);
+
+	printf("done.\n\n");
+
+	return 0;
 
 }

@@ -63,83 +63,83 @@
 
 int main(int argc, char **argv)
 {
-    int s,nbytes;
-    struct sockaddr_can addr;
-    struct ifreq ifr;
+	int s,nbytes;
+	struct sockaddr_can addr;
+	struct ifreq ifr;
 
-    struct timeval tv;
+	struct timeval tv;
 
-    struct {
-      struct bcm_msg_head msg_head;
-      struct can_frame frame;
-    } txmsg, rxmsg;
+	struct {
+		struct bcm_msg_head msg_head;
+		struct can_frame frame;
+	} txmsg, rxmsg;
 
-    if ((s = socket(PF_CAN, SOCK_DGRAM, CAN_BCM)) < 0) {
-	perror("socket");
-	return 1;
-    }
+	if ((s = socket(PF_CAN, SOCK_DGRAM, CAN_BCM)) < 0) {
+		perror("socket");
+		return 1;
+	}
 
-    addr.can_family = PF_CAN;
-    strcpy(ifr.ifr_name, "vcan2");
-    ioctl(s, SIOCGIFINDEX, &ifr);
-    addr.can_ifindex = ifr.ifr_ifindex;
+	addr.can_family = PF_CAN;
+	strcpy(ifr.ifr_name, "vcan2");
+	ioctl(s, SIOCGIFINDEX, &ifr);
+	addr.can_ifindex = ifr.ifr_ifindex;
 
-    if (connect(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-	perror("connect");
-	return 1;
-    }
+	if (connect(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+		perror("connect");
+		return 1;
+	}
 
 #ifdef RTR_SETUP
-    /* specify CAN-Frame to send as reply to a RTR-request */
-    txmsg.msg_head.opcode  = RX_SETUP;
-    txmsg.msg_head.can_id  = 0x359 | CAN_RTR_FLAG;
-    txmsg.msg_head.flags   = RX_RTR_FRAME; /* | TX_CP_CAN_ID */;
-    txmsg.msg_head.ival1.tv_sec = 0; /* no timers in RTR-mode */
-    txmsg.msg_head.ival1.tv_usec = 0;
-    txmsg.msg_head.ival2.tv_sec = 0;
-    txmsg.msg_head.ival2.tv_usec = 0;
-    txmsg.msg_head.nframes = 1; /* exact 1 */
+	/* specify CAN-Frame to send as reply to a RTR-request */
+	txmsg.msg_head.opcode  = RX_SETUP;
+	txmsg.msg_head.can_id  = 0x359 | CAN_RTR_FLAG;
+	txmsg.msg_head.flags   = RX_RTR_FRAME; /* | TX_CP_CAN_ID */;
+	txmsg.msg_head.ival1.tv_sec = 0; /* no timers in RTR-mode */
+	txmsg.msg_head.ival1.tv_usec = 0;
+	txmsg.msg_head.ival2.tv_sec = 0;
+	txmsg.msg_head.ival2.tv_usec = 0;
+	txmsg.msg_head.nframes = 1; /* exact 1 */
 
-    /* the frame to send as reply ... */
-    txmsg.frame.can_id = 0x359; /* 'should' be the same */
-    txmsg.frame.can_dlc = 3;
-    txmsg.frame.data[0] = 0x12;
-    txmsg.frame.data[1] = 0x34;
-    txmsg.frame.data[2] = 0x56;
+	/* the frame to send as reply ... */
+	txmsg.frame.can_id = 0x359; /* 'should' be the same */
+	txmsg.frame.can_dlc = 3;
+	txmsg.frame.data[0] = 0x12;
+	txmsg.frame.data[1] = 0x34;
+	txmsg.frame.data[2] = 0x56;
 
 #else
-    /* normal receiption of RTR-frames in Userspace */
-    txmsg.msg_head.opcode  = RX_SETUP;
-    txmsg.msg_head.can_id  = 0x359 | CAN_RTR_FLAG;
-    txmsg.msg_head.flags   = RX_FILTER_ID;
-    txmsg.msg_head.ival1.tv_sec = 0;
-    txmsg.msg_head.ival1.tv_usec = 0;
-    txmsg.msg_head.ival2.tv_sec = 0;
-    txmsg.msg_head.ival2.tv_usec = 0;
-    txmsg.msg_head.nframes = 0;
+	/* normal receiption of RTR-frames in Userspace */
+	txmsg.msg_head.opcode  = RX_SETUP;
+	txmsg.msg_head.can_id  = 0x359 | CAN_RTR_FLAG;
+	txmsg.msg_head.flags   = RX_FILTER_ID;
+	txmsg.msg_head.ival1.tv_sec = 0;
+	txmsg.msg_head.ival1.tv_usec = 0;
+	txmsg.msg_head.ival2.tv_sec = 0;
+	txmsg.msg_head.ival2.tv_usec = 0;
+	txmsg.msg_head.nframes = 0;
 #endif
 
-    if (write(s, &txmsg, sizeof(txmsg)) < 0)
-      perror("write");
+	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+		perror("write");
 
-    while (1) {
+	while (1) {
 
-      if ((nbytes = read(s, &rxmsg, sizeof(rxmsg))) < 0)
-	perror("read");
+		if ((nbytes = read(s, &rxmsg, sizeof(rxmsg))) < 0)
+			perror("read");
     
-      ioctl(s, SIOCGSTAMP, &tv);
-      printf("(%ld.%06ld)   ", tv.tv_sec, tv.tv_usec);
+		ioctl(s, SIOCGSTAMP, &tv);
+		printf("(%ld.%06ld)   ", tv.tv_sec, tv.tv_usec);
 
-      if (rxmsg.msg_head.opcode == RX_CHANGED &&
-	  nbytes == sizeof(struct bcm_msg_head) + sizeof(struct can_frame) &&
-	  (rxmsg.msg_head.can_id & CAN_SFF_MASK) == 0x359 &&
-	  (rxmsg.frame.can_id & CAN_SFF_MASK) == 0x359) {
-	printf("RX_CHANGED message for can_id <%03X> RTR = %d\n",
-	       rxmsg.frame.can_id, (rxmsg.frame.can_id & CAN_RTR_FLAG)?1:0);
-      }
-    }
+		if (rxmsg.msg_head.opcode == RX_CHANGED &&
+		    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct can_frame) &&
+		    (rxmsg.msg_head.can_id & CAN_SFF_MASK) == 0x359 &&
+		    (rxmsg.frame.can_id & CAN_SFF_MASK) == 0x359) {
+			printf("RX_CHANGED message for can_id <%03X> RTR = %d\n",
+			       rxmsg.frame.can_id, (rxmsg.frame.can_id & CAN_RTR_FLAG)?1:0);
+		}
+	}
 
-    close(s);
+	close(s);
 
-    return 0;
+	return 0;
 }

@@ -61,107 +61,107 @@
 
 int main(int argc, char **argv)
 {
-    int s;
-    struct sockaddr_can addr;
-    struct can_filter rfilter;
-    struct can_frame frame;
-    can_err_mask_t err_mask = CAN_ERR_MASK; /* all */
-    int nbytes;
-    struct ifreq ifr;
-    char *ifname = "vcan2";
-    int ifindex;
-    int opt;
-    struct timeval tv;
+	int s;
+	struct sockaddr_can addr;
+	struct can_filter rfilter;
+	struct can_frame frame;
+	can_err_mask_t err_mask = CAN_ERR_MASK; /* all */
+	int nbytes;
+	struct ifreq ifr;
+	char *ifname = "vcan2";
+	int ifindex;
+	int opt;
+	struct timeval tv;
 
-    while ((opt = getopt(argc, argv, "i:m:")) != -1) {
-        switch (opt) {
-        case 'i':
-	    ifname = optarg;
-            break;
-        case 'm':
-	    err_mask = strtoul(optarg, (char **)NULL, 16);
-            break;
-        default:
-            fprintf(stderr, "Unknown option %c\n", opt);
-            break;
-        }
-    }
-
-
-    if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
-      perror("socket");
-      return 1;
-    }
-
-    rfilter.can_id   = CAN_INV_FILTER; /* no normal CAN frames */
-    rfilter.can_mask = 0; /* all: INV(all) == nothing */
-    setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, sizeof(rfilter));
-
-    setsockopt(s, SOL_CAN_RAW, CAN_RAW_ERR_FILTER, &err_mask, sizeof(err_mask));
-
-    strcpy(ifr.ifr_name, ifname);
-    ioctl(s, SIOCGIFINDEX, &ifr);
-    ifindex = ifr.ifr_ifindex;
-
-    addr.can_family = AF_CAN;
-    addr.can_ifindex = ifindex;
-
-    if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-      perror("bind");
-      return 1;
-    }
-
-    while (1) {
-
-	if ((nbytes = read(s, &frame, sizeof(struct can_frame))) < 0) {
-	    perror("read");
-	    return 1;
-	} else if (nbytes < sizeof(struct can_frame)) {
-	    fprintf(stderr, "read: incomplete CAN frame\n");
-	    return 1;
-	} else {
-	    if (ioctl(s, SIOCGSTAMP, &tv) < 0)
-		perror("SIOCGSTAMP");
-	    else
-		printf("(%ld.%06ld) ", tv.tv_sec, tv.tv_usec);
-
-	    if (frame.can_id & CAN_ERR_BUSOFF)
-		printf("(bus off) ");
-
-	    if (frame.can_id & CAN_ERR_TX_TIMEOUT)
-		printf("(tx timeout) ");
-
-	    if (frame.can_id & CAN_ERR_ACK)
-		printf("(ack) ");
-
-	    if (frame.can_id & CAN_ERR_LOSTARB) {
-		printf("(lost arb)");
-		if (frame.data[0])
-		    printf("[%d]", frame.data[0]);
-		printf(" ");
-	    }
-
-	    if (frame.can_id & CAN_ERR_CRTL) {
-		printf("(crtl)");
-		if (frame.data[1] & CAN_ERR_CRTL_RX_OVERFLOW)
-		    printf("[RX buffer overflow]");
-		if (frame.data[1] & CAN_ERR_CRTL_TX_OVERFLOW)
-		    printf("[TX buffer overflow]");
-		if (frame.data[1] & CAN_ERR_CRTL_RX_WARNING)
-		    printf("[RX warning]");
-		if (frame.data[1] & CAN_ERR_CRTL_TX_WARNING)
-		    printf("[TX warning]");
-		printf(" ");
-	    }
-
-	    /* to be continued */
-
-	    printf("\n");
-	    fflush(stdout);
+	while ((opt = getopt(argc, argv, "i:m:")) != -1) {
+		switch (opt) {
+		case 'i':
+			ifname = optarg;
+			break;
+		case 'm':
+			err_mask = strtoul(optarg, (char **)NULL, 16);
+			break;
+		default:
+			fprintf(stderr, "Unknown option %c\n", opt);
+			break;
+		}
 	}
-    }
 
-    close(s);
 
-    return 0;
+	if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
+		perror("socket");
+		return 1;
+	}
+
+	rfilter.can_id   = CAN_INV_FILTER; /* no normal CAN frames */
+	rfilter.can_mask = 0; /* all: INV(all) == nothing */
+	setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, sizeof(rfilter));
+
+	setsockopt(s, SOL_CAN_RAW, CAN_RAW_ERR_FILTER, &err_mask, sizeof(err_mask));
+
+	strcpy(ifr.ifr_name, ifname);
+	ioctl(s, SIOCGIFINDEX, &ifr);
+	ifindex = ifr.ifr_ifindex;
+
+	addr.can_family = AF_CAN;
+	addr.can_ifindex = ifindex;
+
+	if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+		perror("bind");
+		return 1;
+	}
+
+	while (1) {
+
+		if ((nbytes = read(s, &frame, sizeof(struct can_frame))) < 0) {
+			perror("read");
+			return 1;
+		} else if (nbytes < sizeof(struct can_frame)) {
+			fprintf(stderr, "read: incomplete CAN frame\n");
+			return 1;
+		} else {
+			if (ioctl(s, SIOCGSTAMP, &tv) < 0)
+				perror("SIOCGSTAMP");
+			else
+				printf("(%ld.%06ld) ", tv.tv_sec, tv.tv_usec);
+
+			if (frame.can_id & CAN_ERR_BUSOFF)
+				printf("(bus off) ");
+
+			if (frame.can_id & CAN_ERR_TX_TIMEOUT)
+				printf("(tx timeout) ");
+
+			if (frame.can_id & CAN_ERR_ACK)
+				printf("(ack) ");
+
+			if (frame.can_id & CAN_ERR_LOSTARB) {
+				printf("(lost arb)");
+				if (frame.data[0])
+					printf("[%d]", frame.data[0]);
+				printf(" ");
+			}
+
+			if (frame.can_id & CAN_ERR_CRTL) {
+				printf("(crtl)");
+				if (frame.data[1] & CAN_ERR_CRTL_RX_OVERFLOW)
+					printf("[RX buffer overflow]");
+				if (frame.data[1] & CAN_ERR_CRTL_TX_OVERFLOW)
+					printf("[TX buffer overflow]");
+				if (frame.data[1] & CAN_ERR_CRTL_RX_WARNING)
+					printf("[RX warning]");
+				if (frame.data[1] & CAN_ERR_CRTL_TX_WARNING)
+					printf("[TX warning]");
+				printf(" ");
+			}
+
+			/* to be continued */
+
+			printf("\n");
+			fflush(stdout);
+		}
+	}
+
+	close(s);
+
+	return 0;
 }

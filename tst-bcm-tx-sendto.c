@@ -63,60 +63,60 @@
 
 int main(int argc, char **argv)
 {
-    int s;
-    struct sockaddr_can addr;
-    struct ifreq ifr;
+	int s;
+	struct sockaddr_can addr;
+	struct ifreq ifr;
 
-    struct {
-      struct bcm_msg_head msg_head;
-      struct can_frame frame;
-    } txmsg;
+	struct {
+		struct bcm_msg_head msg_head;
+		struct can_frame frame;
+	} txmsg;
 
-    if ((s = socket(PF_CAN, SOCK_DGRAM, CAN_BCM)) < 0) {
-	perror("socket");
-	return 1;
-    }
+	if ((s = socket(PF_CAN, SOCK_DGRAM, CAN_BCM)) < 0) {
+		perror("socket");
+		return 1;
+	}
 
-    addr.can_family = PF_CAN;
-    addr.can_ifindex = 0; /* bind to 'any' device */
+	addr.can_family = PF_CAN;
+	addr.can_ifindex = 0; /* bind to 'any' device */
 
-    if (connect(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-	perror("connect");
-	return 1;
-    }
+	if (connect(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
+		perror("connect");
+		return 1;
+	}
 
-    txmsg.msg_head.opcode  = TX_SETUP;
-    txmsg.msg_head.can_id  = 0x42;
-    txmsg.msg_head.flags   = SETTIMER|STARTTIMER;
-    txmsg.msg_head.nframes = 1;
-    txmsg.msg_head.count = 10;
-    txmsg.msg_head.ival1.tv_sec = 1;
-    txmsg.msg_head.ival1.tv_usec = 0;
-    txmsg.msg_head.ival2.tv_sec = 0;
-    txmsg.msg_head.ival2.tv_usec = 0;
-    txmsg.frame.can_id    = 0x42;
-    txmsg.frame.can_dlc   = 8;
-    U64_DATA(&txmsg.frame) = (__u64) 0xdeadbeefdeadbeefULL;
+	txmsg.msg_head.opcode  = TX_SETUP;
+	txmsg.msg_head.can_id  = 0x42;
+	txmsg.msg_head.flags   = SETTIMER|STARTTIMER;
+	txmsg.msg_head.nframes = 1;
+	txmsg.msg_head.count = 10;
+	txmsg.msg_head.ival1.tv_sec = 1;
+	txmsg.msg_head.ival1.tv_usec = 0;
+	txmsg.msg_head.ival2.tv_sec = 0;
+	txmsg.msg_head.ival2.tv_usec = 0;
+	txmsg.frame.can_id    = 0x42;
+	txmsg.frame.can_dlc   = 8;
+	U64_DATA(&txmsg.frame) = (__u64) 0xdeadbeefdeadbeefULL;
 
-    /* should cause an error due to ifindex = 0 */
-    if (write(s, &txmsg, sizeof(txmsg)) < 0)
-      perror("write");
+	/* should cause an error due to ifindex = 0 */
+	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+		perror("write");
 
-    printf("Press any key to send on valid device ...\n");
-    getchar();
+	printf("Press any key to send on valid device ...\n");
+	getchar();
 
-    addr.can_family = PF_CAN;
-    strcpy(ifr.ifr_name, "vcan2");
-    ioctl(s, SIOCGIFINDEX, &ifr);
-    addr.can_ifindex = ifr.ifr_ifindex;
+	addr.can_family = PF_CAN;
+	strcpy(ifr.ifr_name, "vcan2");
+	ioctl(s, SIOCGIFINDEX, &ifr);
+	addr.can_ifindex = ifr.ifr_ifindex;
 
-    if (sendto(s, &txmsg, sizeof(txmsg), 0, (struct sockaddr*)&addr, sizeof(addr)) < 0)
-      perror("sendto");
+	if (sendto(s, &txmsg, sizeof(txmsg), 0, (struct sockaddr*)&addr, sizeof(addr)) < 0)
+		perror("sendto");
 
-    printf("Press any key to close the socket ...\n");
-    getchar();
+	printf("Press any key to close the socket ...\n");
+	getchar();
 
-    close(s);
+	close(s);
 
-    return 0;
+	return 0;
 }
