@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 
 	struct {
 		struct bcm_msg_head msg_head;
-		struct can_frame frame[4];
+		struct can_frame frame;
 	} msg;
 
 	if ((s = socket(PF_CAN, SOCK_DGRAM, CAN_BCM)) < 0) {
@@ -94,14 +94,14 @@ int main(int argc, char **argv)
 	msg.msg_head.ival1.tv_usec = 0;
 	msg.msg_head.ival2.tv_sec = 0;
 	msg.msg_head.ival2.tv_usec = 0;
-	msg.frame[0].can_id    = 0x760;
-	msg.frame[0].can_dlc   = 6;
-	msg.frame[0].data[0] = 0xA1;
-	msg.frame[0].data[1] = 0x0F;
-	msg.frame[0].data[2] = 0x10;
-	msg.frame[0].data[3] = 0x00;
-	msg.frame[0].data[4] = 0x00;
-	msg.frame[0].data[5] = 0x00;
+	msg.frame.can_id    = 0x760;
+	msg.frame.can_dlc   = 6;
+	msg.frame.data[0] = 0xA1;
+	msg.frame.data[1] = 0x0F;
+	msg.frame.data[2] = 0x10;
+	msg.frame.data[3] = 0x00;
+	msg.frame.data[4] = 0x00;
+	msg.frame.data[5] = 0x00;
 
 
 	if (write(s, &msg, sizeof(msg)) < 0)
