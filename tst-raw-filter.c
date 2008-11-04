@@ -71,13 +71,17 @@ int main(int argc, char **argv)
 	char *ifname = "any";
 	int ifindex;
 	int opt;
+	int peek = 0;
 	int nfilters = 0;
 	int deflt = 0;
 
-	while ((opt = getopt(argc, argv, "i:f:d")) != -1) {
+	while ((opt = getopt(argc, argv, "i:p:f:d")) != -1) {
 		switch (opt) {
 		case 'i': /* specify different interface than default */
 			ifname = optarg;
+			break;
+		case 'p': /* MSG_PEEK 'p' times before consuming the frame */
+			peek = atoi(optarg);
 			break;
 		case 'd': /* use default settings from CAN_RAW socket */ 
 			deflt = 1;
@@ -129,8 +133,15 @@ int main(int argc, char **argv)
 
 	while (1) {
 		socklen_t len = sizeof(addr);
+		int flags;
+
+		if (peek && peek--)
+			flags = MSG_PEEK;
+		else
+			flags = 0;
+
 		nbytes = recvfrom(s, &frame, sizeof(struct can_frame),
-				  0, (struct sockaddr*)&addr, &len);
+				  flags, (struct sockaddr*)&addr, &len);
 		if (nbytes < 0) {
 			perror("read");
 			return 1;
@@ -154,6 +165,8 @@ int main(int argc, char **argv)
 			}
 			if (frame.can_id & CAN_RTR_FLAG)
 				printf("remote request");
+			if (flags & MSG_PEEK)
+				printf(" (MSG_PEEK)");
 			printf("\n");
 			fflush(stdout);
 		}
