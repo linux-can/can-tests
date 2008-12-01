@@ -91,8 +91,8 @@ int main(int argc, char **argv)
 				fputs("too many filters\n", stderr);
 				break;
 			}
-			rfilter[nfilters].can_id = strtol(strtok(optarg, ":"), NULL, 16);
-			rfilter[nfilters].can_mask = strtol(strtok(NULL, ":"), NULL, 16);
+			rfilter[nfilters].can_id = strtoul(strtok(optarg, ":"), NULL, 16);
+			rfilter[nfilters].can_mask = strtoul(strtok(NULL, ":"), NULL, 16);
 			nfilters++;
 			break;
 		default:
