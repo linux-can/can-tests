@@ -1,0 +1,57 @@
+testcase  0 : can_id = 0x00000123 can_mask = 0x000007FF
+00000123
+40000123
+80000123
+C0000123
+testcase  1 : can_id = 0x80000123 can_mask = 0x000007FF
+00000123
+40000123
+80000123
+C0000123
+testcase  2 : can_id = 0x40000123 can_mask = 0x000007FF
+00000123
+40000123
+80000123
+C0000123
+testcase  3 : can_id = 0xC0000123 can_mask = 0x000007FF
+00000123
+40000123
+80000123
+C0000123
+testcase  4 : can_id = 0x00000123 can_mask = 0x800007FF
+00000123
+40000123
+testcase  5 : can_id = 0x80000123 can_mask = 0x800007FF
+80000123
+C0000123
+testcase  6 : can_id = 0x40000123 can_mask = 0x800007FF
+00000123
+40000123
+testcase  7 : can_id = 0xC0000123 can_mask = 0x800007FF
+80000123
+C0000123
+testcase  8 : can_id = 0x00000123 can_mask = 0x400007FF
+00000123
+80000123
+testcase  9 : can_id = 0x80000123 can_mask = 0x400007FF
+00000123
+80000123
+testcase 10 : can_id = 0x40000123 can_mask = 0x400007FF
+40000123
+C0000123
+testcase 11 : can_id = 0xC0000123 can_mask = 0x400007FF
+40000123
+C0000123
+testcase 12 : can_id = 0x00000123 can_mask = 0xC00007FF
+00000123
+testcase 13 : can_id = 0x80000123 can_mask = 0xC00007FF
+80000123
+testcase 14 : can_id = 0x40000123 can_mask = 0xC00007FF
+40000123
+testcase 15 : can_id = 0xC0000123 can_mask = 0xC00007FF
+C0000123
+testcase 16 : can_id = 0x00000123 can_mask = 0xDFFFFFFF
+00000123
+testcase 17 : can_id = 0x80000123 can_mask = 0xDFFFFFFF
+80000123
+testcase 18 : Filtertest done.
