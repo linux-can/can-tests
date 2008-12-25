@@ -169,7 +169,7 @@ int main(int argc, char **argv)
 
 			printf("RX_CHANGED ");
 
-			for (i=0; i<8; i++)
+			for (i=0; i < msg.frame.can_dlc; i++)
 				printf("%02X ", msg.frame.data[i]);
 
 		} else {
