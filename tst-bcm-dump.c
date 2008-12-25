@@ -50,6 +50,7 @@ void print_usage(char *prg)
 	fprintf(stderr, "         -c <can_id>    (used CAN ID. Default: 0x%03X)\n", DEFAULT_CANID);
 	fprintf(stderr, "         -o <timeout>   (Timeout value in nsecs. Default: 0)\n");
 	fprintf(stderr, "         -t <throttle>  (Throttle value in nsecs. Default: 0)\n");
+	fprintf(stderr, "         -q <msgs>      (Quit after receiption of #msgs)\n");
 	fprintf(stderr, "         -s             (set STARTTIMER flag. Default: off)\n");
 	fprintf(stderr, "\n");
 }
@@ -68,12 +69,13 @@ int main(int argc, char **argv)
 	unsigned long starttimer = 0;
 	unsigned long long timeout = 0;
 	unsigned long long throttle = 0;
+	unsigned long msgs = 0;
 	struct {
 		struct bcm_msg_head msg_head;
 		struct can_frame frame;
 	} msg;
 
-	while ((opt = getopt(argc, argv, "i:c:o:t:s")) != -1) {
+	while ((opt = getopt(argc, argv, "i:c:o:t:q:s")) != -1) {
 		switch (opt) {
 
 		case 'i':
@@ -85,11 +87,15 @@ int main(int argc, char **argv)
 			break;
 
 		case 'o':
-			timeout = atoll(optarg);
+			timeout = strtoull(optarg, (char **)NULL, 10);
 			break;
 
 		case 't':
-			throttle = atoll(optarg);
+			throttle = strtoull(optarg, (char **)NULL, 10);
+			break;
+
+		case 'q':
+			msgs = strtoul(optarg, (char **)NULL, 10);
 			break;
 
 		case 's':
@@ -184,6 +190,9 @@ int main(int argc, char **argv)
 
 		printf("\n");
 		fflush(stdout);
+
+		if (msgs && !(--msgs))
+			break;
 	}
 
 	close(s);
