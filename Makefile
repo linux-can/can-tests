@@ -49,6 +49,7 @@ PROGRAMS = 	tst-raw		  \
 		tst-raw-filter	  \
 		tst-err		  \
 		tst-raw-sendto	  \
+		tst-packet	  \
 		tst-filter-master \
 		tst-filter-server \
 		tst-bcm-cycle 	  \
