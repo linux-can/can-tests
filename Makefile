@@ -42,6 +42,7 @@
 
 CFLAGS    = -O2 -Wall -Wno-parentheses -I../kernel/2.6/include \
 	    -fno-strict-aliasing \
+	    -DETH_P_CAN=0x000C \
 	    -DPF_CAN=29 \
 	    -DAF_CAN=PF_CAN
 
