@@ -10,7 +10,7 @@
  *
  * < interface command ival_s ival_us can_id can_dlc [data]* >
  *
- * The commands are 'A'dd, 'D'elete and 'S'end.
+ * The commands are 'A'dd, 'U'pdate, 'D'elete and 'S'end.
  * e.g.
  *
  * Send the CAN frame 123#1122334455667788 every second on vcan1
@@ -21,6 +21,9 @@
  *
  * Send the CAN frame 123#42424242 every 20 msecs on vcan1
  * < vcan1 A 0 20000 123 4 42 42 42 42 >
+ *
+ * Update the CAN frame 123#42424242 with 123#112233 - no change of timers
+ * < vcan1 U 0 0 123 3 11 22 33 >
  *
  * Delete the cyclic send job from above
  * < vcan1 D 0 0 123 0 >
@@ -232,6 +235,10 @@ int main(int argc, char **argv)
 		case 'A':
 			msg.msg_head.opcode = TX_SETUP;
 			msg.msg_head.flags |= SETTIMER|STARTTIMER;
+			break;
+		case 'U':
+			msg.msg_head.opcode = TX_SETUP;
+			msg.msg_head.flags  = 0;
 			break;
 		case 'D':
 			msg.msg_head.opcode = TX_DELETE;
