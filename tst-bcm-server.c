@@ -10,6 +10,8 @@
  *
  * < interface command ival_s ival_us can_id can_dlc [data]* >
  *
+ * ## TX path:
+ *
  * The commands are 'A'dd, 'U'pdate, 'D'elete and 'S'end.
  * e.g.
  *
@@ -33,11 +35,33 @@
  *
  * When the socket is closed the cyclic transmissions are terminated.
  *
+ * ## RX path:
+ *
+ * The commands are 'R'eceive setup, 'F'ilter ID Setup and 'X' for delete.
+ * e.g.
+ *
+ * Receive CAN ID 0x123 from vcan1 and check for changes in the first byte
+ * < vcan1 R 0 0 123 1 FF >
+ *
+ * Receive CAN ID 0x123 from vcan1 and check for changes in given mask
+ * < vcan1 R 0 0 123 8 FF 00 F8 00 00 00 00 00 >
+ *
+ * As above but throttle receive update rate down to 1.5 seconds
+ * < vcan1 R 1 500000 123 8 FF 00 F8 00 00 00 00 00 >
+ *
+ * Filter for CAN ID 0x123 from vcan1 without content filtering
+ * < vcan1 F 0 0 123 0 >
+ *
+ * Delete receive filter ('R' or 'F') for CAN ID 0x123
+ * < vcan1 X 0 0 123 0 >
+ *
+ * ##
+ *
  * Authors:
  * Andre Naujoks (the socket server stuff)
  * Oliver Hartkopp (the rest)
  *
- * Copyright (c) 2002-2007 Volkswagen Group Electronic Research
+ * Copyright (c) 2002-2009 Volkswagen Group Electronic Research
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -93,39 +117,24 @@
 #include <linux/can.h>
 #include <linux/can/bcm.h>
 
-void readmsg(int sock, char *buf, int maxlen) {
-
-	int ptr = 0;
-
-	while (read(sock, buf+ptr, 1) == 1) {
-
-		if (ptr) {
-			if (*(buf+ptr) == '>') {
-				*(buf+ptr+1) = 0;
-				return;
-			}
-			if (++ptr > maxlen-2)
-				ptr = 0;
-		}
-		else
-			if (*(buf+ptr) == '<')
-				ptr++;
-	}
-
-	*buf = 0;
-}
-
+#define MAXLEN 100
+#define PORT 28600
 
 int main(int argc, char **argv)
 {
 
 	int sl, sa, sc;
+	int i, ret;
+	int idx = 0;
 	struct sockaddr_in  saddr, clientaddr;
 	struct sockaddr_can caddr;
+	socklen_t caddrlen = sizeof(caddr);
 	struct ifreq ifr;
+	fd_set readfds;
 	socklen_t sin_size = sizeof(clientaddr);
 
-	char buf[100];
+	char buf[MAXLEN];
+	char rxmsg[50];
 
 	struct {
 		struct bcm_msg_head msg_head;
@@ -139,7 +148,7 @@ int main(int argc, char **argv)
 
 	saddr.sin_family = AF_INET;
 	saddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	saddr.sin_port = htons(28600);
+	saddr.sin_port = htons(PORT);
 
 	while(bind(sl,(struct sockaddr*)&saddr, sizeof(saddr)) < 0) {
 		printf(".");fflush(NULL);
@@ -163,8 +172,8 @@ int main(int argc, char **argv)
 		else {
 			if (errno != EINTR) {
 				/*
-				 * If the cause for the error was NOT the signal from
-				 * a dying child, than give an error
+				 * If the cause for the error was NOT the
+				 * signal from a dying child => give an error
 				 */
 				perror("accept");
 				exit(1);
@@ -179,82 +188,144 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	memset(&caddr, 0, sizeof(caddr));
 	caddr.can_family = PF_CAN;
-	caddr.can_ifindex = 0; /* any device => need for sendto() */
+	/* can_ifindex is set to 0 (any device) => need for sendto() */
 
 	if (connect(sc, (struct sockaddr *)&caddr, sizeof(caddr)) < 0) {
 		perror("connect");
 		return 1;
 	}
 
-	/* prepare stable settings */
-	msg.msg_head.nframes       = 1;
-	msg.msg_head.count         = 0;
-	msg.msg_head.ival1.tv_sec  = 0;
-	msg.msg_head.ival1.tv_usec = 0;
-
 	while (1) {
 
-		char cmd;
-		int items;
+		FD_ZERO(&readfds);
+		FD_SET(sc, &readfds);
+		FD_SET(sa, &readfds);
 
-		readmsg(sa, buf, sizeof(buf));
+		ret = select((sc > sa)?sc+1:sa+1, &readfds, NULL, NULL, NULL);
 
-		// printf("read '%s'\n", buf);
+		if (FD_ISSET(sc, &readfds)) {
 
-		items = sscanf(buf, "< %6s %c %lu %lu %x %hhu "
-			       "%hhx %hhx %hhx %hhx %hhx %hhx %hhx %hhx >",
-			       ifr.ifr_name,
-			       &cmd, 
-			       &msg.msg_head.ival2.tv_sec,
-			       &msg.msg_head.ival2.tv_usec,
-			       &msg.msg_head.can_id,
-			       &msg.frame.can_dlc,
-			       &msg.frame.data[0],
-			       &msg.frame.data[1],
-			       &msg.frame.data[2],
-			       &msg.frame.data[3],
-			       &msg.frame.data[4],
-			       &msg.frame.data[5],
-			       &msg.frame.data[6],
-			       &msg.frame.data[7]);
+			ret = recvfrom(sc, &msg, sizeof(msg), 0,
+				       (struct sockaddr*)&caddr, &caddrlen);
 
-		if (items < 6)
-			break;
-		if (msg.frame.can_dlc > 8)
-			break;
-		if (items != 6 + msg.frame.can_dlc)
-			break;
+			ifr.ifr_ifindex = caddr.can_ifindex;
+			ioctl(sc, SIOCGIFNAME, &ifr);
 
-		msg.frame.can_id = msg.msg_head.can_id;
+			sprintf(rxmsg, "< %s %03X %d ", ifr.ifr_name,
+				msg.msg_head.can_id, msg.frame.can_dlc);
 
-		switch (cmd) {
-		case 'S':
-			msg.msg_head.opcode = TX_SEND;
-			break;
-		case 'A':
-			msg.msg_head.opcode = TX_SETUP;
-			msg.msg_head.flags |= SETTIMER|STARTTIMER;
-			break;
-		case 'U':
-			msg.msg_head.opcode = TX_SETUP;
-			msg.msg_head.flags  = 0;
-			break;
-		case 'D':
-			msg.msg_head.opcode = TX_DELETE;
-			break;
+			for ( i = 0; i < msg.frame.can_dlc; i++)
+				sprintf(rxmsg + strlen(rxmsg), "%02X ",
+					msg.frame.data[i]);
 
-		default:
-			printf("unknown command '%c'.\n", cmd);
-			exit(1);
+			/* delimiter '\0' for Adobe(TM) Flash(TM) XML sockets */
+			strcat(rxmsg, ">\0");
+
+			send(sa, rxmsg, strlen(rxmsg) + 1, 0);
 		}
 
-		if (!ioctl(sc, SIOCGIFINDEX, &ifr)) {
-			caddr.can_ifindex = ifr.ifr_ifindex;
-			sendto(sc, &msg, sizeof(msg), 0,
-			       (struct sockaddr*)&caddr, sizeof(caddr));
-		}
 
+		if (FD_ISSET(sa, &readfds)) {
+
+			char cmd;
+			int items;
+
+			if (read(sa, buf+idx, 1) != 1)
+				continue;
+
+			if (!idx) {
+				if (buf[0] == '<')
+					idx = 1;
+
+				continue;
+			}
+
+			if (idx > MAXLEN-2) {
+				idx = 0;
+				continue;
+			}
+
+			if (buf[idx] != '>') {
+				idx++;
+				continue;
+			}
+
+			buf[idx+1] = 0;
+			idx = 0;
+
+			//printf("read '%s'\n", buf);
+
+			/* prepare bcm message settings */
+			memset(&msg, 0, sizeof(msg));
+			msg.msg_head.nframes = 1;
+
+			items = sscanf(buf, "< %6s %c %lu %lu %x %hhu "
+				       "%hhx %hhx %hhx %hhx %hhx %hhx "
+				       "%hhx %hhx >",
+				       ifr.ifr_name,
+				       &cmd, 
+				       &msg.msg_head.ival2.tv_sec,
+				       &msg.msg_head.ival2.tv_usec,
+				       &msg.msg_head.can_id,
+				       &msg.frame.can_dlc,
+				       &msg.frame.data[0],
+				       &msg.frame.data[1],
+				       &msg.frame.data[2],
+				       &msg.frame.data[3],
+				       &msg.frame.data[4],
+				       &msg.frame.data[5],
+				       &msg.frame.data[6],
+				       &msg.frame.data[7]);
+
+			if (items < 6)
+				break;
+			if (msg.frame.can_dlc > 8)
+				break;
+			if (items != 6 + msg.frame.can_dlc)
+				break;
+
+			msg.frame.can_id = msg.msg_head.can_id;
+
+			switch (cmd) {
+			case 'S':
+				msg.msg_head.opcode = TX_SEND;
+				break;
+			case 'A':
+				msg.msg_head.opcode = TX_SETUP;
+				msg.msg_head.flags |= SETTIMER | STARTTIMER;
+				break;
+			case 'U':
+				msg.msg_head.opcode = TX_SETUP;
+				msg.msg_head.flags  = 0;
+				break;
+			case 'D':
+				msg.msg_head.opcode = TX_DELETE;
+				break;
+
+			case 'R':
+				msg.msg_head.opcode = RX_SETUP;
+				msg.msg_head.flags  = SETTIMER;
+				break;
+			case 'F':
+				msg.msg_head.opcode = RX_SETUP;
+				msg.msg_head.flags  = RX_FILTER_ID | SETTIMER;
+				break;
+			case 'X':
+				msg.msg_head.opcode = RX_DELETE;
+				break;
+			default:
+				printf("unknown command '%c'.\n", cmd);
+				exit(1);
+			}
+
+			if (!ioctl(sc, SIOCGIFINDEX, &ifr)) {
+				caddr.can_ifindex = ifr.ifr_ifindex;
+				sendto(sc, &msg, sizeof(msg), 0,
+				       (struct sockaddr*)&caddr, sizeof(caddr));
+			}
+		}
 	}
 
 	close(sc);
