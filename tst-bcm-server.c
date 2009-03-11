@@ -105,9 +105,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <signal.h>
 #include <errno.h>
 
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <sys/uio.h>
@@ -119,6 +121,11 @@
 
 #define MAXLEN 100
 #define PORT 28600
+
+void childdied(int i)
+{
+	wait(NULL);
+}
 
 int main(int argc, char **argv)
 {
@@ -132,6 +139,8 @@ int main(int argc, char **argv)
 	struct ifreq ifr;
 	fd_set readfds;
 	socklen_t sin_size = sizeof(clientaddr);
+	struct sigaction signalaction;
+	sigset_t sigset;
 
 	char buf[MAXLEN];
 	char rxmsg[50];
@@ -140,6 +149,12 @@ int main(int argc, char **argv)
 		struct bcm_msg_head msg_head;
 		struct can_frame frame;
 	} msg;
+
+	sigemptyset(&sigset);
+	signalaction.sa_handler = &childdied;
+	signalaction.sa_mask = sigset;
+	signalaction.sa_flags = 0;
+	sigaction(SIGCHLD, &signalaction, NULL);  /* signal for dying child */
 
 	if((sl = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
 		perror("inetsocket");
@@ -232,8 +247,8 @@ int main(int argc, char **argv)
 			char cmd;
 			int items;
 
-			if (read(sa, buf+idx, 1) != 1)
-				continue;
+			if (read(sa, buf+idx, 1) < 1)
+				exit(1);
 
 			if (!idx) {
 				if (buf[0] == '<')
