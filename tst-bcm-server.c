@@ -10,6 +10,8 @@
  *
  * < interface command ival_s ival_us can_id can_dlc [data]* >
  *
+ * Only the items 'can_id' and 'data' are given in (ASCII) hexadecimal values.
+ *
  * ## TX path:
  *
  * The commands are 'A'dd, 'U'pdate, 'D'elete and 'S'end.
@@ -54,6 +56,14 @@
  *
  * Delete receive filter ('R' or 'F') for CAN ID 0x123
  * < vcan1 X 0 0 123 0 >
+ *
+ * CAN messages received by the given filters are send in the format:
+ * < interface can_id can_dlc [data]* >
+ *
+ * e.g. when receiving a CAN message from vcan1 with
+ * can_id 0x123 , data length 4 and data 0x11, 0x22, 0x33 and 0x44
+ *
+ * < vcan1 123 4 11 22 33 44 >
  *
  * ##
  *
