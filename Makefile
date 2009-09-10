@@ -40,7 +40,9 @@
 #
 #  Send feedback to <socketcan-users@lists.berlios.de>
 
-CFLAGS    = -O2 -Wall -Wno-parentheses -I../kernel/2.6/include \
+KERNELDIR = ../kernel/2.6
+
+CFLAGS    = -O2 -Wall -Wno-parentheses -I$(KERNELDIR)/include \
 	    -fno-strict-aliasing \
 	    -DETH_P_CAN=0x000C \
 	    -DPF_CAN=29 \
