@@ -54,7 +54,6 @@ PROGRAMS = 	tst-raw		  \
 		tst-filter-master \
 		tst-filter-server \
 		tst-bcm-cycle 	  \
-		tst-bcm-server 	  \
 		tst-bcm-tx_read	  \
 		tst-bcm-rtr	  \
 		tst-bcm-single	  \
