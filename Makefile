@@ -68,6 +68,7 @@ PROGRAMS := \
 	bcm/tst-bcm-tx_read \
 	bcm/tst-bcmfd-cycle \
 	bcm/tst-bcmfd-filter \
+	drv/canfdtest \
 	gw/gwtest \
 	netlayer/tst-filter \
 	netlayer/tst-filter-master \
