@@ -65,6 +65,7 @@ PROGRAMS = 	tst-raw		  \
 		tst-bcm-tx-sendto \
 		tst-bcm-dump	  \
 		tst-proc	  \
+		gwtest            \
 		canecho
 
 all: $(PROGRAMS)
