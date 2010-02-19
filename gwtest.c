@@ -44,6 +44,8 @@ int addattr_l(struct nlmsghdr *n, int maxlen, int type, const void *data,
 	return 0;
 }
 
+#define USE_PACKED_STRUCT
+
 int main(int argc, char **argv)
 {
 	int s;
@@ -56,10 +58,20 @@ int main(int argc, char **argv)
 
 	} req;
 
-	static struct can_frame modframe;
 	struct can_filter filter;
 	struct sockaddr_nl nladdr;
+
+#ifdef USE_PACKED_STRUCT
+	struct modattr {
+		struct can_frame cf;
+		__u8 modtype;
+	} __attribute__((packed));
+
+	struct modattr modmsg;
+#else
+	static struct can_frame modframe;
 	char modbuf[CGW_MODATTR_LEN];
+#endif
 
 	s = socket(PF_NETLINK, SOCK_RAW, NETLINK_ROUTE);
 
@@ -81,25 +93,45 @@ int main(int argc, char **argv)
 	filter.can_mask = 0x700;
 
 	addattr_l(&req.n, sizeof(req), CGW_FILTER, &filter, sizeof(filter));
+
+#ifdef USE_PACKED_STRUCT
+
+	if (sizeof(modmsg) != CGW_MODATTR_LEN) {
+		printf("Problem with packed msg. Use linear copy instead.\n");
+		return 1;
+	}
+
+	modmsg.cf.can_id  = 0x555;
+	modmsg.cf.can_dlc = 5;
+	*(unsigned long long *)modmsg.cf.data = 0x5555555555555555ULL;
+
+	modmsg.modtype = CGW_MOD_ID;
+	addattr_l(&req.n, sizeof(req), CGW_MOD_SET, &modmsg, CGW_MODATTR_LEN);
+
+	modmsg.modtype = CGW_MOD_DLC;
+	addattr_l(&req.n, sizeof(req), CGW_MOD_AND, &modmsg, CGW_MODATTR_LEN);
+
+	modmsg.modtype = CGW_MOD_DATA;
+	addattr_l(&req.n, sizeof(req), CGW_MOD_XOR, &modmsg, CGW_MODATTR_LEN);
+
+#else
+
 	modframe.can_id  = 0x555;
 	modframe.can_dlc = 5;
 	*(unsigned long long *)modframe.data = 0x5555555555555555ULL;
 
-	modbuf[0] = CGW_MOD_ID;
-	memcpy(&modbuf[1], &modframe, sizeof(struct can_frame));
+	memcpy(modbuf, &modframe, sizeof(struct can_frame));
 
+	modbuf[sizeof(struct can_frame)] = CGW_MOD_ID;
 	addattr_l(&req.n, sizeof(req), CGW_MOD_SET, modbuf, CGW_MODATTR_LEN);
 
-	modbuf[0] = CGW_MOD_DLC;
-	memcpy(&modbuf[1], &modframe, sizeof(struct can_frame));
-
+	modbuf[sizeof(struct can_frame)] = CGW_MOD_DLC;
 	addattr_l(&req.n, sizeof(req), CGW_MOD_AND, modbuf, CGW_MODATTR_LEN);
 
-	modbuf[0] = CGW_MOD_DATA;
-	memcpy(&modbuf[1], &modframe, sizeof(struct can_frame));
-
+	modbuf[sizeof(struct can_frame)] = CGW_MOD_DATA;
 	addattr_l(&req.n, sizeof(req), CGW_MOD_XOR, modbuf, CGW_MODATTR_LEN);
 
+#endif
 
 	memset(&nladdr, 0, sizeof(nladdr));
 	nladdr.nl_family = AF_NETLINK;
