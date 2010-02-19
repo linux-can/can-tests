@@ -85,7 +85,7 @@ int main(int argc, char **argv)
 	req.r.can_family  = AF_CAN;
 	req.r.src_ifindex = if_nametoindex("vcan2");
 	req.r.dst_ifindex = if_nametoindex("vcan3");
-	req.r.can_txflags = CAN_GW_TXFLAGS_LOOPBACK;
+	req.r.can_txflags = CAN_GW_TXFLAGS_ECHO;
 
 	/* add new attributes here */
 
