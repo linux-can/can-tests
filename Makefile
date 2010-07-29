@@ -55,6 +55,7 @@ PROGRAMS = 	tst-raw		  \
 		tst-packet	  \
 		tst-filter-master \
 		tst-filter-server \
+		tst-rcv-own-msgs  \
 		tst-bcm-cycle 	  \
 		tst-bcm-tx_read	  \
 		tst-bcm-rtr	  \
