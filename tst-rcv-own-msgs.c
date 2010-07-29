@@ -141,9 +141,14 @@ int main(int argc, char **argv)
 	int s, t;
 	struct sockaddr_can addr;
 	struct ifreq ifr;
-	int ifindex;
 	int i = 0;
 
+
+	/* check command line options */
+	if (argc != 2) {
+		fprintf(stderr, "Usage: %s <device>\n", argv[0]);
+		return 1;
+	}
 
 	if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
 		perror("socket");
@@ -154,12 +159,13 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	strcpy(ifr.ifr_name, "vcan0");
-	ioctl(s, SIOCGIFINDEX, &ifr);
-	ifindex = ifr.ifr_ifindex;
-
+	strcpy(ifr.ifr_name, argv[1]);
+	if (ioctl(s, SIOCGIFINDEX, &ifr) < 0) {
+		perror("SIOCGIFINDEX");
+		return 1;
+	}
+	addr.can_ifindex = ifr.ifr_ifindex;
 	addr.can_family = AF_CAN;
-	addr.can_ifindex = ifindex;
 
 	if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
 		perror("bind");
