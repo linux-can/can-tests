@@ -62,14 +62,29 @@
 
 #define max(a,b) (a > b ? a : b)
 
-void read_sockets(int s, int t)
+struct rxs {
+	int s;
+	int t;
+};
+
+struct rxs test_sockets(int s, int t, canid_t can_id)
 {
 	fd_set rdfs;
 	struct timeval tv;
 	int m = max(s,t)+1;
 	int have_rx = 1;
 	struct can_frame frame;
+	struct rxs rx;
 	int ret;
+
+	frame.can_id = can_id;
+	frame.can_dlc = 0;
+	if (write(s, &frame, sizeof(frame)) < 0) {
+		perror("write");
+		exit(1);
+	}
+
+	rx.s = rx.t = 0;
 
 	while (have_rx) {
 
@@ -80,7 +95,8 @@ void read_sockets(int s, int t)
 		tv.tv_usec = 50000; /* 50ms timeout */
 		have_rx = 0;
 
-		if ((ret = select(m, &rdfs, NULL, NULL, &tv)) < 0) {
+		ret = select(m, &rdfs, NULL, NULL, &tv);
+		if (ret < 0) {
 			perror("select");
 			exit(1);
 		}
@@ -93,7 +109,11 @@ void read_sockets(int s, int t)
 				perror("read");
 				exit(1);
 			}
-			printf (" s : %x\n", frame.can_id);
+			if (frame.can_id != can_id) {
+				fprintf(stderr, "received wrong can_id!\n");
+				exit(1);
+			}
+			rx.s++;
 		}
 
 		if (FD_ISSET(t, &rdfs)) {
@@ -104,26 +124,18 @@ void read_sockets(int s, int t)
 				perror("read");
 				exit(1);
 			}
-			printf (" t : %x\n", frame.can_id);
+			if (frame.can_id != can_id) {
+				fprintf(stderr, "received wrong can_id!\n");
+				exit(1);
+			}
+			rx.t++;
 		}
-
 	}
 
-	printf(" timeout\n");
+	/* timeout */
 
+	return rx;
 }
-
-void write_socket(int s, int val)
-{
-	static struct can_frame frame;
-
-	frame.can_id = val;
-	if (write(s, &frame, sizeof(frame)) < 0) {
-		perror("write");
-		exit(1);
-	}
-}
-
 
 void setopts(int s, int loopback, int recv_own_msgs)
 {
@@ -132,7 +144,8 @@ void setopts(int s, int loopback, int recv_own_msgs)
 	setsockopt(s, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS,
 		   &recv_own_msgs, sizeof(recv_own_msgs));
 
-	printf("sockopt %c %c\n", (loopback)?'L':'-', (recv_own_msgs)?'R':'-');
+	printf("check loopback %d recv_own_msgs %d ... ",
+	       loopback, recv_own_msgs);
 }
 
 
@@ -141,8 +154,7 @@ int main(int argc, char **argv)
 	int s, t;
 	struct sockaddr_can addr;
 	struct ifreq ifr;
-	int i = 0;
-
+	struct rxs rx;
 
 	/* check command line options */
 	if (argc != 2) {
@@ -176,29 +188,57 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	printf("Starting PF_CAN frame flow test.\n");
+	printf("checking socket default settings ... ");
+	rx = test_sockets(s, t, 0x340);
+	if (rx.s == 0 && rx.t == 1)
+		printf("ok.\n");
+	else {
+		printf("failure!\n");
+		return 1;
+	}
 
-	/* perform the default settings */
-	printf("sockopt default\n");
-	write_socket(s, i++);
-	read_sockets(s, t);
-
+	/* check loopback 0 recv_own_msgs 0 */
 	setopts(s, 0, 0);
-	write_socket(s, i++);
-	read_sockets(s, t);
+	rx = test_sockets(s, t, 0x341);
+	if (rx.s == 0 && rx.t == 0)
+		printf("ok.\n");
+	else {
+		printf("failure!\n");
+		return 1;
+	}
 
+	/* check loopback 0 recv_own_msgs 1 */
 	setopts(s, 0, 1);
-	write_socket(s, i++);
-	read_sockets(s, t);
+	rx = test_sockets(s, t, 0x342);
+	if (rx.s == 0 && rx.t == 0)
+		printf("ok.\n");
+	else {
+		printf("failure!\n");
+		return 1;
+	}
 
+	/* check loopback 1 recv_own_msgs 0 */
 	setopts(s, 1, 0);
-	write_socket(s, i++);
-	read_sockets(s, t);
+	rx = test_sockets(s, t, 0x343);
+	if (rx.s == 0 && rx.t == 1)
+		printf("ok.\n");
+	else {
+		printf("failure!\n");
+		return 1;
+	}
 
+	/* check loopback 1 recv_own_msgs 1 */
 	setopts(s, 1, 1);
-	write_socket(s, i++);
-	read_sockets(s, t);
+	rx = test_sockets(s, t, 0x344);
+	if (rx.s == 1 && rx.t == 1)
+		printf("ok.\n");
+	else {
+		printf("failure!\n");
+		return 1;
+	}
 
-	printf("done.\n");
+	printf("PF_CAN frame flow test was successful.\n");
 
 	close(s);
 	close(t);
