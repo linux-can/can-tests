@@ -47,7 +47,6 @@ int addattr_l(struct nlmsghdr *n, int maxlen, int type, const void *data,
 int main(int argc, char **argv)
 {
 	int s;
-	int err = 0;
 
 	struct {
 		struct nlmsghdr n;
@@ -110,8 +109,8 @@ int main(int argc, char **argv)
 	nladdr.nl_pid    = 0;
 	nladdr.nl_groups = 0;
 
-	err = sendto(s, &req, req.n.nlmsg_len, 0,
-		     (struct sockaddr*)&nladdr, sizeof(nladdr));
+	sendto(s, &req, req.n.nlmsg_len, 0,
+	       (struct sockaddr*)&nladdr, sizeof(nladdr));
 
 	perror("netlink says ");
 	close(s);

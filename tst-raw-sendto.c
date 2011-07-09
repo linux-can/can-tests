@@ -63,7 +63,6 @@ int main(int argc, char **argv)
 	int s;
 	struct sockaddr_can addr;
 	struct can_frame frame;
-	int nbytes;
 	struct ifreq ifr;
 	char *ifname = "vcan2";
 	int ifindex;
@@ -109,7 +108,7 @@ int main(int argc, char **argv)
 	addr.can_family  = AF_CAN;
 	addr.can_ifindex = ifindex; /* send via this interface */
  
-	nbytes = sendto(s, &frame, sizeof(struct can_frame), 0, (struct sockaddr*)&addr, sizeof(addr));
+	sendto(s, &frame, sizeof(struct can_frame), 0, (struct sockaddr*)&addr, sizeof(addr));
 
 	close(s);
 
