@@ -53,6 +53,7 @@ PROGRAMS = 	tst-raw		  \
 		tst-err		  \
 		tst-raw-sendto	  \
 		tst-packet	  \
+		tst-filter	  \
 		tst-filter-master \
 		tst-filter-server \
 		tst-rcv-own-msgs  \
