@@ -40,11 +40,10 @@
 #
 #  Send feedback to <linux-can@vger.kernel.org>
 
-KERNELDIR = ../kernel/2.6
 DESTDIR ?=
 PREFIX ?= /usr/local
 
-CFLAGS    = -O2 -Wall -Wno-parentheses -I$(KERNELDIR)/include \
+CFLAGS    = -O2 -Wall -Wno-parentheses -Iinclude \
 	    -fno-strict-aliasing \
 	    -DETH_P_CAN=0x000C \
 	    -DPF_CAN=29 \
