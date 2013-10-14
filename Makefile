@@ -41,6 +41,8 @@
 #  Send feedback to <linux-can@vger.kernel.org>
 
 KERNELDIR = ../kernel/2.6
+DESTDIR ?=
+PREFIX ?= /usr/local
 
 CFLAGS    = -O2 -Wall -Wno-parentheses -I$(KERNELDIR)/include \
 	    -fno-strict-aliasing \
@@ -73,7 +75,8 @@ PROGRAMS = 	tst-raw		  \
 all: $(PROGRAMS)
 
 install:
-	cp -f $(PROGRAMS) /usr/local/bin
+	mkdir -p $(DESTDIR)$(PREFIX)/bin
+	cp -f $(PROGRAMS) $(DESTDIR)$(PREFIX)/bin
 
 clean:
 	rm -f $(PROGRAMS)
