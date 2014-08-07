@@ -21,7 +21,7 @@ modprobe -f vcan echo=1
 VCAN=vcan0
 
 # create virtual CAN device
-ip link add dev $VCAN type vcan || exit 1
+ip link add name $VCAN type vcan || exit 1
 ifconfig $VCAN up
 
 # check precondition for CAN frame flow test
