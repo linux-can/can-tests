@@ -1,8 +1,4 @@
 /*
- *  $Id$
- */
-
-/*
  * tst-bcm-dump.c
  *
  * Copyright (c) 2008 Oliver Hartkopp

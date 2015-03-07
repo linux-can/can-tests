@@ -1,8 +1,4 @@
 /*
- *  $Id$
- */
-
-/*
  * tst-packet.c - send and receive CAN frames via PF_PACKET sockets
  *
  * Remark: The sending of CAN frames via PF_PACKET does not work for

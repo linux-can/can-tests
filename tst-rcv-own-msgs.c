@@ -1,8 +1,4 @@
 /*
- *  $Id$
- */
-
-/*
  * tst-rcv-own-msgs.c
  *
  * Copyright (c) 2010 Volkswagen Group Electronic Research

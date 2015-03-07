@@ -1,8 +1,4 @@
 /*
- *  $Id$
- */
-
-/*
  * tst-filter-server.c
  *
  * Copyright (c) 2008 Volkswagen Group Electronic Research
