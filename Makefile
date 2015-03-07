@@ -72,7 +72,8 @@ PROGRAMS = 	tst-raw		  \
 		tst-bcm-tx-sendto \
 		tst-bcm-dump	  \
 		tst-proc	  \
-		gwtest            \
+		gwtest		  \
+		canpump		  \
 		canecho
 
 all: $(PROGRAMS)
@@ -82,7 +83,10 @@ install:
 	cp -f $(PROGRAMS) $(DESTDIR)$(PREFIX)/bin
 
 clean:
-	rm -f $(PROGRAMS)
+	rm -f $(PROGRAMS) *.o
 
 distclean:
-	rm -f $(PROGRAMS) *~
+	rm -f $(PROGRAMS) *.o *~
+
+canpump.o:	lib.h
+canpump:	canpump.o	lib.o
