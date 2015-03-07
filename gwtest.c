@@ -18,7 +18,7 @@
 #include <asm/types.h>
 #include <linux/netlink.h>
 #include <linux/rtnetlink.h>
-#include <socketcan/can/gw.h>
+#include <linux/can/gw.h>
 
 #include <linux/if_link.h>
 
