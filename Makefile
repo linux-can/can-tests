@@ -1,6 +1,4 @@
 #
-#  $Id$
-#
 #  Copyright (c) 2002-2007 Volkswagen Group Electronic Research
 #  All rights reserved.
 #
@@ -43,8 +41,14 @@
 DESTDIR ?=
 PREFIX ?= /usr/local
 
-CFLAGS    = -O2 -Wall -Wno-parentheses -Iinclude \
-	    -fno-strict-aliasing \
+MAKEFLAGS = -k
+
+CFLAGS    = -O2 -Wall -Wno-parentheses \
+	    -fno-strict-aliasing
+
+CPPFLAGS += -Iinclude \
+	    -D_FILE_OFFSET_BITS=64 \
+	    -DSO_RXQ_OVFL=40 \
 	    -DETH_P_CAN=0x000C \
 	    -DPF_CAN=29 \
 	    -DAF_CAN=PF_CAN
