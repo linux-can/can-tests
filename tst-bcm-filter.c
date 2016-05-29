@@ -56,6 +56,8 @@
 #include <linux/can/bcm.h>
 
 #define U64_DATA(p) (*(unsigned long long*)(p)->data)
+#define MHSIZ sizeof(struct bcm_msg_head)
+#define CFSIZ sizeof(struct can_frame)
 
 int main(int argc, char **argv)
 {
@@ -144,7 +146,7 @@ int main(int argc, char **argv)
 	printf("<2>Writing TX_SEND with wrong can_id <%03X>\n",
 	       txmsg.frame[0].can_id);
 
-	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+	if (write(s, &txmsg, MHSIZ + CFSIZ) < 0)
 		perror("write");
 
 	txmsg.msg_head.opcode  = TX_SEND;
@@ -156,7 +158,7 @@ int main(int argc, char **argv)
 	printf("<3>Writing TX_SEND with correct can_id <%03X>\n",
 	       txmsg.frame[0].can_id);
 
-	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+	if (write(s, &txmsg, MHSIZ + CFSIZ) < 0)
 		perror("write");
 
 	if ((nbytes = read(s, &rxmsg, sizeof(rxmsg))) < 0)
@@ -208,7 +210,7 @@ int main(int argc, char **argv)
 	printf("<5>Writing TX_SEND with correct can_id <%03X>\n",
 	       txmsg.frame[0].can_id);
 
-	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+	if (write(s, &txmsg, MHSIZ + CFSIZ) < 0)
 		perror("write");
 
 	if ((nbytes = read(s, &rxmsg, sizeof(rxmsg))) < 0)
@@ -234,7 +236,7 @@ int main(int argc, char **argv)
 	       txmsg.frame[0].can_id);
 	printf("no changed data\n");
 
-	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+	if (write(s, &txmsg, MHSIZ + CFSIZ) < 0)
 		perror("write");
 
 	/* no change here */
@@ -249,7 +251,7 @@ int main(int argc, char **argv)
 	       txmsg.frame[0].can_id);
 	printf("changed relevant msgbits\n");
 
-	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+	if (write(s, &txmsg, MHSIZ + CFSIZ) < 0)
 		perror("write");
 
 	if ((nbytes = read(s, &rxmsg, sizeof(rxmsg))) < 0)
@@ -275,7 +277,7 @@ int main(int argc, char **argv)
 	       txmsg.frame[0].can_id);
 	printf("changed irrelevant msgbits\n");
 
-	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+	if (write(s, &txmsg, MHSIZ + CFSIZ) < 0)
 		perror("write");
 
 	txmsg.msg_head.opcode  = TX_SEND;
@@ -288,7 +290,7 @@ int main(int argc, char **argv)
 	       txmsg.frame[0].can_id);
 	printf("changed Data Length Code DLC\n");
 
-	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+	if (write(s, &txmsg, MHSIZ + CFSIZ) < 0)
 		perror("write");
 
 	if ((nbytes = read(s, &rxmsg, sizeof(rxmsg))) < 0)
@@ -340,7 +342,7 @@ int main(int argc, char **argv)
 
 	printf("<A>Writing TX_SEND with wrong MUX ID 42\n");
 
-	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+	if (write(s, &txmsg, MHSIZ + CFSIZ) < 0)
 		perror("write");
 
 	txmsg.msg_head.opcode  = TX_SEND;
@@ -351,7 +353,7 @@ int main(int argc, char **argv)
 
 	printf("<B>Writing TX_SEND with correct MUX ID 01\n");
 
-	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+	if (write(s, &txmsg, MHSIZ + CFSIZ) < 0)
 		perror("write");
 
 	if ((nbytes = read(s, &rxmsg, sizeof(rxmsg))) < 0)
@@ -375,7 +377,7 @@ int main(int argc, char **argv)
 
 	printf("<C>Writing TX_SEND with correct MUX ID 01 but no data change\n");
 
-	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+	if (write(s, &txmsg, MHSIZ + CFSIZ) < 0)
 		perror("write");
 
 	txmsg.msg_head.opcode  = TX_SEND;
@@ -386,7 +388,7 @@ int main(int argc, char **argv)
 
 	printf("<D>Writing TX_SEND with correct MUX ID 01 but no relevant data change\n");
 
-	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+	if (write(s, &txmsg, MHSIZ + CFSIZ) < 0)
 		perror("write");
 
 	txmsg.msg_head.opcode  = TX_SEND;
@@ -397,7 +399,7 @@ int main(int argc, char **argv)
 
 	printf("<E>Writing TX_SEND with correct MUX ID 01 with relevant data change\n");
 
-	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+	if (write(s, &txmsg, MHSIZ + CFSIZ) < 0)
 		perror("write");
 
 	if ((nbytes = read(s, &rxmsg, sizeof(rxmsg))) < 0)
@@ -421,7 +423,7 @@ int main(int argc, char **argv)
 
 	printf("<F>Writing TX_SEND with correct MUX ID 02\n");
 
-	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+	if (write(s, &txmsg, MHSIZ + CFSIZ) < 0)
 		perror("write");
 
 	if ((nbytes = read(s, &rxmsg, sizeof(rxmsg))) < 0)
@@ -445,7 +447,7 @@ int main(int argc, char **argv)
 
 	printf("<10>Writing TX_SEND with correct MUX ID 02 with relevant data change\n");
 
-	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+	if (write(s, &txmsg, MHSIZ + CFSIZ) < 0)
 		perror("write");
 
 	if ((nbytes = read(s, &rxmsg, sizeof(rxmsg))) < 0)
@@ -469,7 +471,7 @@ int main(int argc, char **argv)
 
 	printf("<11>Writing TX_SEND with correct MUX ID 02 no data change but DLC\n");
 
-	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+	if (write(s, &txmsg, MHSIZ + CFSIZ) < 0)
 		perror("write");
 
 	if ((nbytes = read(s, &rxmsg, sizeof(rxmsg))) < 0)
@@ -490,7 +492,7 @@ int main(int argc, char **argv)
 
 	printf("<12>Writing TX_SEND with wrong MUX ID 03\n");
 
-	if (write(s, &txmsg, sizeof(txmsg)) < 0)
+	if (write(s, &txmsg, MHSIZ + CFSIZ) < 0)
 		perror("write");
 
 	if ((nbytes = read(s, &rxmsg, sizeof(rxmsg))) < 0)
