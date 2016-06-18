@@ -142,8 +142,10 @@ int main(int argc, char **argv)
 	txmsg.msg_head.ival2.tv_usec = 0;
 #endif
 	txmsg.frame[0].can_id    = 0x43;
-	txmsg.frame[0].len   = 8;
+	txmsg.frame[0].len   = 24;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0xdeadbeefdeadbeefULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0088008800880088ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0044004400440044ULL;
 
 	printf("<2>Writing TX_SEND with wrong can_id <%03X>\n",
 	       txmsg.frame[0].can_id);
@@ -154,8 +156,10 @@ int main(int argc, char **argv)
 	txmsg.msg_head.opcode  = TX_SEND;
 	txmsg.msg_head.nframes = 1;
 	txmsg.frame[0].can_id    = 0x42;
-	txmsg.frame[0].len   = 8;
+	txmsg.frame[0].len   = 24;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0xdeadbeefdeadbeefULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0088008800880088ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0044004400440044ULL;
 
 	printf("<3>Writing TX_SEND with correct can_id <%03X>\n",
 	       txmsg.frame[0].can_id);
@@ -195,7 +199,8 @@ int main(int argc, char **argv)
 	txmsg.msg_head.ival2.tv_sec = 0;
 	txmsg.msg_head.ival2.tv_usec = 0;
 	txmsg.msg_head.nframes = 1;
-	/* txmsg.frame[0].len   = 8; obsolete for RX_SETUP */
+	/* txmsg.frame[0].len   = 24; obsolete for RX_SETUP */
+	memset(&txmsg.frame[0].data[0], 0, 64); /* clear all filter bits */
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0xFF00000000000000ULL;
 
 	printf("<*>Writing simple RX_SETUP for can_id <%03X> with msgbits 0x%016llX\n",
@@ -207,8 +212,10 @@ int main(int argc, char **argv)
 	txmsg.msg_head.opcode  = TX_SEND;
 	txmsg.msg_head.nframes = 1;
 	txmsg.frame[0].can_id    = 0x42;
-	txmsg.frame[0].len   = 8;
+	txmsg.frame[0].len   = 24;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0xdeadbeefdeadbeefULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0088008800880088ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0044004400440044ULL;
 
 	printf("<5>Writing TX_SEND with correct can_id <%03X>\n",
 	       txmsg.frame[0].can_id);
@@ -232,8 +239,10 @@ int main(int argc, char **argv)
 	txmsg.msg_head.opcode  = TX_SEND;
 	txmsg.msg_head.nframes = 1;
 	txmsg.frame[0].can_id    = 0x42;
-	txmsg.frame[0].len   = 8;
+	txmsg.frame[0].len   = 24;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0xdeadbeefdeadbeefULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0088008800880088ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0044004400440044ULL;
 
 	printf("<6>Writing TX_SEND with correct can_id <%03X> ",
 	       txmsg.frame[0].can_id);
@@ -247,8 +256,10 @@ int main(int argc, char **argv)
 	txmsg.msg_head.opcode  = TX_SEND;
 	txmsg.msg_head.nframes = 1;
 	txmsg.frame[0].can_id    = 0x42;
-	txmsg.frame[0].len   = 8;
+	txmsg.frame[0].len   = 24;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0xdeadbeefdeadbeefULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0088008800880088ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0044004400440044ULL;
 
 	printf("<7>Writing TX_SEND with correct can_id <%03X> ",
 	       txmsg.frame[0].can_id);
@@ -273,8 +284,10 @@ int main(int argc, char **argv)
 	txmsg.msg_head.opcode  = TX_SEND;
 	txmsg.msg_head.nframes = 1;
 	txmsg.frame[0].can_id    = 0x42;
-	txmsg.frame[0].len   = 8;
+	txmsg.frame[0].len   = 24;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0xdeadbeefdeadbeefULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0088008800880088ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0044004400440044ULL;
 
 	printf("<8>Writing TX_SEND with correct can_id <%03X> ",
 	       txmsg.frame[0].can_id);
@@ -286,8 +299,10 @@ int main(int argc, char **argv)
 	txmsg.msg_head.opcode  = TX_SEND;
 	txmsg.msg_head.nframes = 1;
 	txmsg.frame[0].can_id    = 0x42;
-	txmsg.frame[0].len   = 7;
+	txmsg.frame[0].len   = 20;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0xdeadbeefdeadbeefULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0088008800880088ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0044004400440044ULL;
 
 	printf("<9>Writing TX_SEND with correct can_id <%03X> ",
 	       txmsg.frame[0].can_id);
@@ -328,8 +343,14 @@ int main(int argc, char **argv)
 	txmsg.msg_head.ival1.tv_usec = 0;
 	txmsg.msg_head.nframes = 3;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0xFF00000000000000ULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0000000000000000ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0000000000000000ULL;
 	U64_DATA(&txmsg.frame[1].data[0]) = (__u64) 0x01000000000000FFULL;
+	U64_DATA(&txmsg.frame[1].data[8]) = (__u64) 0x0000000000000000ULL;
+	U64_DATA(&txmsg.frame[1].data[16]) = (__u64) 0x0000000000000000ULL;
 	U64_DATA(&txmsg.frame[2].data[0]) = (__u64) 0x02000000000000FFULL;
+	U64_DATA(&txmsg.frame[2].data[8]) = (__u64) 0x0000000000000000ULL;
+	U64_DATA(&txmsg.frame[2].data[16]) = (__u64) 0x0000000000000000ULL;
 
 	printf("<*>Writing multiplex RX_SETUP for can_id <%03X>\n",
 	       txmsg.msg_head.can_id);
@@ -341,8 +362,11 @@ int main(int argc, char **argv)
 	txmsg.msg_head.opcode  = TX_SEND;
 	txmsg.msg_head.nframes = 1;
 	txmsg.frame[0].can_id    = 0x42;
-	txmsg.frame[0].len   = 8;
+	txmsg.frame[0].len   = 24;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0x4200000000000000ULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0000000000000000ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0000000000000000ULL;
+
 
 	printf("<A>Writing TX_SEND with wrong MUX ID 42\n");
 
@@ -352,8 +376,10 @@ int main(int argc, char **argv)
 	txmsg.msg_head.opcode  = TX_SEND;
 	txmsg.msg_head.nframes = 1;
 	txmsg.frame[0].can_id    = 0x42;
-	txmsg.frame[0].len   = 8;
+	txmsg.frame[0].len   = 24;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0x0100000000000000ULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0000000000000000ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0000000000000000ULL;
 
 	printf("<B>Writing TX_SEND with correct MUX ID 01\n");
 
@@ -376,8 +402,10 @@ int main(int argc, char **argv)
 	txmsg.msg_head.opcode  = TX_SEND;
 	txmsg.msg_head.nframes = 1;
 	txmsg.frame[0].can_id    = 0x42;
-	txmsg.frame[0].len   = 8;
+	txmsg.frame[0].len   = 24;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0x0100000000000000ULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0000000000000000ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0000000000000000ULL;
 
 	printf("<C>Writing TX_SEND with correct MUX ID 01 but no data change\n");
 
@@ -387,8 +415,10 @@ int main(int argc, char **argv)
 	txmsg.msg_head.opcode  = TX_SEND;
 	txmsg.msg_head.nframes = 1;
 	txmsg.frame[0].can_id    = 0x42;
-	txmsg.frame[0].len   = 8;
+	txmsg.frame[0].len   = 24;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0x0100001234567800ULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0000000000000000ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0000000000000000ULL;
 
 	printf("<D>Writing TX_SEND with correct MUX ID 01 but no relevant data change\n");
 
@@ -398,8 +428,10 @@ int main(int argc, char **argv)
 	txmsg.msg_head.opcode  = TX_SEND;
 	txmsg.msg_head.nframes = 1;
 	txmsg.frame[0].can_id    = 0x42;
-	txmsg.frame[0].len   = 8;
+	txmsg.frame[0].len   = 24;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0x0100001234567801ULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0000000000000000ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0000000000000000ULL;
 
 	printf("<E>Writing TX_SEND with correct MUX ID 01 with relevant data change\n");
 
@@ -422,8 +454,10 @@ int main(int argc, char **argv)
 	txmsg.msg_head.opcode  = TX_SEND;
 	txmsg.msg_head.nframes = 1;
 	txmsg.frame[0].can_id    = 0x42;
-	txmsg.frame[0].len   = 8;
+	txmsg.frame[0].len   = 24;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0x0200000000000000ULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0000000000000000ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0000000000000000ULL;
 
 	printf("<F>Writing TX_SEND with correct MUX ID 02\n");
 
@@ -446,8 +480,10 @@ int main(int argc, char **argv)
 	txmsg.msg_head.opcode  = TX_SEND;
 	txmsg.msg_head.nframes = 1;
 	txmsg.frame[0].can_id    = 0x42;
-	txmsg.frame[0].len   = 8;
+	txmsg.frame[0].len   = 24;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0x0200000000000001ULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0000000000000000ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0000000000000000ULL;
 
 	printf("<10>Writing TX_SEND with correct MUX ID 02 with relevant data change\n");
 
@@ -470,8 +506,10 @@ int main(int argc, char **argv)
 	txmsg.msg_head.opcode  = TX_SEND;
 	txmsg.msg_head.nframes = 1;
 	txmsg.frame[0].can_id    = 0x42;
-	txmsg.frame[0].len   = 7;
+	txmsg.frame[0].len   = 20;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0x0200000000000001ULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0000000000000000ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0000000000000000ULL;
 
 	printf("<11>Writing TX_SEND with correct MUX ID 02 no data change but DLC\n");
 
@@ -491,8 +529,10 @@ int main(int argc, char **argv)
 	txmsg.msg_head.opcode  = TX_SEND;
 	txmsg.msg_head.nframes = 1;
 	txmsg.frame[0].can_id    = 0x42;
-	txmsg.frame[0].len   = 7;
+	txmsg.frame[0].len   = 20;
 	U64_DATA(&txmsg.frame[0].data[0]) = (__u64) 0x0300000000000001ULL;
+	U64_DATA(&txmsg.frame[0].data[8]) = (__u64) 0x0000000000000000ULL;
+	U64_DATA(&txmsg.frame[0].data[16]) = (__u64) 0x0000000000000000ULL;
 
 	printf("<12>Writing TX_SEND with wrong MUX ID 03\n");
 
