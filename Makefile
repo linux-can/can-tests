@@ -63,10 +63,12 @@ PROGRAMS = 	tst-raw		  \
 		tst-filter-server \
 		tst-rcv-own-msgs  \
 		tst-bcm-cycle 	  \
+		tst-bcmfd-cycle	  \
 		tst-bcm-tx_read	  \
 		tst-bcm-rtr	  \
 		tst-bcm-single	  \
 		tst-bcm-filter	  \
+		tst-bcmfd-filter  \
 		tst-bcm-throttle  \
 		tst-bcm-rx-sendto \
 		tst-bcm-tx-sendto \
