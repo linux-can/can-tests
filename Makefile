@@ -65,6 +65,7 @@ PROGRAMS = 	tst-raw		  \
 		tst-bcm-cycle 	  \
 		tst-bcmfd-cycle	  \
 		tst-bcm-tx_read	  \
+		tst-bcm-tx_delete \
 		tst-bcm-rtr	  \
 		tst-bcm-single	  \
 		tst-bcm-filter	  \
