@@ -116,11 +116,8 @@ int main(int argc, char **argv)
 	msg.msg_head.ival1.tv_usec = 0;
 	msg.msg_head.ival2.tv_sec = 0;
 	msg.msg_head.ival2.tv_usec = 0;
-	msg.frame.can_id    = 0xAA;
-	msg.frame.can_dlc   = 8;
-	U64_DATA(&msg.frame) = (__u64) 0xdeadbeefdeadbeefULL;
 
-	if (write(s, &msg, sizeof(msg)) < 0)
+	if (write(s, &msg, sizeof(struct bcm_msg_head)) < 0)
 		perror("write");
 
 	printf("Press any key to start the FD cycle ...\n");
@@ -155,11 +152,8 @@ int main(int argc, char **argv)
 	fdmsg.msg_head.ival1.tv_usec = 0;
 	fdmsg.msg_head.ival2.tv_sec = 0;
 	fdmsg.msg_head.ival2.tv_usec = 0;
-	fdmsg.frame.can_id    = 0xAA;
-	fdmsg.frame.len = 8;
-	U64_DATA(&fdmsg.frame) = (__u64) 0xdeadbeefdeadbeefULL;
 
-	if (write(s, &fdmsg, sizeof(fdmsg)) < 0)
+	if (write(s, &fdmsg, sizeof(struct bcm_msg_head)) < 0)
 		perror("write");
 
 	printf("Press any key to close the socket ...\n");
