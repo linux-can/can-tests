@@ -174,7 +174,7 @@ int main(int argc, char **argv)
 	printf("(%ld.%06ld)   ", tv.tv_sec, tv.tv_usec);
 
 	if (rxmsg.msg_head.opcode == RX_CHANGED &&
-	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct can_frame) &&
+	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct canfd_frame) &&
 	    rxmsg.msg_head.can_id == 0x42 && rxmsg.frame[0].can_id == 0x42) {
 		printf("<3>Received correct RX_CHANGED message for can_id <%03X> >> OK!\n",
 		       rxmsg.frame[0].can_id);
@@ -230,7 +230,7 @@ int main(int argc, char **argv)
 	printf("(%ld.%06ld)   ", tv.tv_sec, tv.tv_usec);
 
 	if (rxmsg.msg_head.opcode == RX_CHANGED &&
-	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct can_frame) &&
+	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct canfd_frame) &&
 	    rxmsg.msg_head.can_id == 0x42 && rxmsg.frame[0].can_id == 0x42) {
 		printf("<5>Received correct RX_CHANGED message for can_id <%03X> >> OK!\n",
 		       rxmsg.frame[0].can_id);
@@ -275,7 +275,7 @@ int main(int argc, char **argv)
 	printf("(%ld.%06ld)   ", tv.tv_sec, tv.tv_usec);
 
 	if (rxmsg.msg_head.opcode == RX_CHANGED &&
-	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct can_frame) &&
+	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct canfd_frame) &&
 	    rxmsg.msg_head.can_id == 0x42 && rxmsg.frame[0].can_id == 0x42) {
 		printf("<7>Received correct RX_CHANGED message for can_id <%03X> >> OK!\n",
 		       rxmsg.frame[0].can_id);
@@ -318,7 +318,7 @@ int main(int argc, char **argv)
 	printf("(%ld.%06ld)   ", tv.tv_sec, tv.tv_usec);
 
 	if (rxmsg.msg_head.opcode == RX_CHANGED &&
-	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct can_frame) &&
+	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct canfd_frame) &&
 	    rxmsg.msg_head.can_id == 0x42 && rxmsg.frame[0].can_id == 0x42) {
 		printf("<9>Received correct RX_CHANGED message for can_id <%03X> >> OK!\n",
 		       rxmsg.frame[0].can_id);
@@ -393,7 +393,7 @@ int main(int argc, char **argv)
 	printf("(%ld.%06ld)   ", tv.tv_sec, tv.tv_usec);
 
 	if (rxmsg.msg_head.opcode == RX_CHANGED &&
-	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct can_frame) &&
+	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct canfd_frame) &&
 	    rxmsg.msg_head.can_id == 0x42 && rxmsg.frame[0].can_id == 0x42) {
 		printf("<B>Received correct RX_CHANGED message for can_id <%03X> >> OK!\n",
 		       rxmsg.frame[0].can_id);
@@ -445,7 +445,7 @@ int main(int argc, char **argv)
 	printf("(%ld.%06ld)   ", tv.tv_sec, tv.tv_usec);
 
 	if (rxmsg.msg_head.opcode == RX_CHANGED &&
-	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct can_frame) &&
+	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct canfd_frame) &&
 	    rxmsg.msg_head.can_id == 0x42 && rxmsg.frame[0].can_id == 0x42) {
 		printf("<E>Received correct RX_CHANGED message for can_id <%03X> >> OK!\n",
 		       rxmsg.frame[0].can_id);
@@ -471,7 +471,7 @@ int main(int argc, char **argv)
 	printf("(%ld.%06ld)   ", tv.tv_sec, tv.tv_usec);
 
 	if (rxmsg.msg_head.opcode == RX_CHANGED &&
-	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct can_frame) &&
+	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct canfd_frame) &&
 	    rxmsg.msg_head.can_id == 0x42 && rxmsg.frame[0].can_id == 0x42) {
 		printf("<F>Received correct RX_CHANGED message for can_id <%03X> >> OK!\n",
 		       rxmsg.frame[0].can_id);
@@ -497,7 +497,7 @@ int main(int argc, char **argv)
 	printf("(%ld.%06ld)   ", tv.tv_sec, tv.tv_usec);
 
 	if (rxmsg.msg_head.opcode == RX_CHANGED &&
-	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct can_frame) &&
+	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct canfd_frame) &&
 	    rxmsg.msg_head.can_id == 0x42 && rxmsg.frame[0].can_id == 0x42) {
 		printf("<10>Received correct RX_CHANGED message for can_id <%03X> >> OK!\n",
 		       rxmsg.frame[0].can_id);
@@ -520,7 +520,7 @@ int main(int argc, char **argv)
 		perror("read");
 
 	if (rxmsg.msg_head.opcode == RX_CHANGED &&
-	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct can_frame) &&
+	    nbytes == sizeof(struct bcm_msg_head) + sizeof(struct canfd_frame) &&
 	    rxmsg.msg_head.can_id == 0x42 && rxmsg.frame[0].can_id == 0x42) {
 		printf("<11>Received correct RX_CHANGED message for can_id <%03X> >> OK!\n",
 		       rxmsg.frame[0].can_id);
