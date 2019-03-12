@@ -69,7 +69,7 @@ static inline void _put_id(char *buf, int end_offset, canid_t id)
 {
 	/* build 3 (SFF) or 8 (EFF) digit CAN identifier */
 	while (end_offset >= 0) {
-		buf[end_offset--] = hex_asc_upper[id & 0xF];
+		buf[end_offset--] = hex_asc_upper_lo(id);
 		id >>= 4;
 	}
 }
@@ -270,7 +270,7 @@ void sprint_canframe(char *buf , struct canfd_frame *cf, int sep, int maxdlen) {
 		buf[offset++] = 'R';
 		/* print a given CAN 2.0B DLC if it's not zero */
 		if (cf->len && cf->len <= CAN_MAX_DLC)
-			buf[offset++] = hex_asc_upper[cf->len & 0xF];
+			buf[offset++] = hex_asc_upper_lo(cf->len);
 
 		buf[offset] = 0;
 		return;
@@ -279,7 +279,7 @@ void sprint_canframe(char *buf , struct canfd_frame *cf, int sep, int maxdlen) {
 	if (maxdlen == CANFD_MAX_DLEN) {
 		/* add CAN FD specific escape char and flags */
 		buf[offset++] = '#';
-		buf[offset++] = hex_asc_upper[cf->flags & 0xF];
+		buf[offset++] = hex_asc_upper_lo(cf->flags);
 		if (sep && len)
 			buf[offset++] = '.';
 	}
@@ -463,7 +463,7 @@ static const char *protocol_violation_types[] = {
 static const char *protocol_violation_locations[] = {
 	"unspecified",
 	"unspecified",
-	"id.28-to-id.28",
+	"id.28-to-id.21",
 	"start-of-frame",
 	"bit-srtr",
 	"bit-ide",
@@ -519,14 +519,14 @@ static int snprintf_error_data(char *buf, size_t len, uint8_t err,
 	return n;
 }
 
-static int snprintf_error_lostarb(char *buf, size_t len, struct canfd_frame *cf)
+static int snprintf_error_lostarb(char *buf, size_t len, const struct canfd_frame *cf)
 {
 	if (len <= 0)
 		return 0;
 	return snprintf(buf, len, "{at bit %d}", cf->data[0]);
 }
 
-static int snprintf_error_ctrl(char *buf, size_t len, struct canfd_frame *cf)
+static int snprintf_error_ctrl(char *buf, size_t len, const struct canfd_frame *cf)
 {
 	int n = 0;
 
@@ -542,7 +542,7 @@ static int snprintf_error_ctrl(char *buf, size_t len, struct canfd_frame *cf)
 	return n;
 }
 
-static int snprintf_error_prot(char *buf, size_t len, struct canfd_frame *cf)
+static int snprintf_error_prot(char *buf, size_t len, const struct canfd_frame *cf)
 {
 	int n = 0;
 
@@ -563,8 +563,8 @@ static int snprintf_error_prot(char *buf, size_t len, struct canfd_frame *cf)
 	return n;
 }
 
-void snprintf_can_error_frame(char *buf, size_t len, struct canfd_frame *cf,
-			      char* sep)
+void snprintf_can_error_frame(char *buf, size_t len, const struct canfd_frame *cf,
+                  const char* sep)
 {
 	canid_t class, mask;
 	int i, n = 0, classes = 0;

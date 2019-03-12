@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
 /*
  * linux/can.h
  *
@@ -42,8 +43,8 @@
  * DAMAGE.
  */
 
-#ifndef CAN_H
-#define CAN_H
+#ifndef _UAPI_CAN_H
+#define _UAPI_CAN_H
 
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -95,11 +96,17 @@ typedef __u32 can_err_mask_t;
  * @can_dlc: frame payload length in byte (0 .. 8) aka data length code
  *           N.B. the DLC field from ISO 11898-1 Chapter 8.4.2.3 has a 1:1
  *           mapping of the 'data length code' to the real payload length
+ * @__pad:   padding
+ * @__res0:  reserved / padding
+ * @__res1:  reserved / padding
  * @data:    CAN frame payload (up to 8 byte)
  */
 struct can_frame {
 	canid_t can_id;  /* 32 bit CAN_ID + EFF/RTR/ERR flags */
 	__u8    can_dlc; /* frame payload length in byte (0 .. CAN_MAX_DLEN) */
+	__u8    __pad;   /* padding */
+	__u8    __res0;  /* reserved / padding */
+	__u8    __res1;  /* reserved / padding */
 	__u8    data[CAN_MAX_DLEN] __attribute__((aligned(8)));
 };
 
@@ -150,7 +157,8 @@ struct canfd_frame {
 #define CAN_TP20	4 /* VAG Transport Protocol v2.0 */
 #define CAN_MCNET	5 /* Bosch MCNet */
 #define CAN_ISOTP	6 /* ISO 15765-2 Transport Protocol */
-#define CAN_NPROTO	7
+#define CAN_J1939	7 /* SAE J1939 */
+#define CAN_NPROTO	8
 
 #define SOL_CAN_BASE 100
 
@@ -173,7 +181,27 @@ struct sockaddr_can {
 	int         can_ifindex;
 	union {
 		/* transport protocol class address information (e.g. ISOTP) */
-		struct { canid_t rx_id, tx_id; } tp;
+		struct {
+			canid_t rx_id;
+			canid_t tx_id;
+		} tp;
+
+		/* J1939 address information */
+		struct {
+			/* 8 byte name when using dynamic addressing */
+			__u64 name;
+
+			/* pgn:
+			 * 8 bit: PS in PDU2 case, else 0
+			 * 8 bit: PF
+			 * 1 bit: DP
+			 * 1 bit: reserved
+			 */
+			__u32 pgn;
+
+			/* 1 byte address */
+			__u8 addr;
+		} j1939;
 
 		/* reserved for future CAN protocols address information */
 	} can_addr;
@@ -198,5 +226,6 @@ struct can_filter {
 };
 
 #define CAN_INV_FILTER 0x20000000U /* to be set in can_filter.can_id */
+#define CAN_RAW_FILTER_MAX 512 /* maximum number of can_filter set via setsockopt() */
 
-#endif /* CAN_H */
+#endif /* !_UAPI_CAN_H */

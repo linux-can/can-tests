@@ -132,7 +132,7 @@ int main(int argc, char **argv)
 	setsockopt(t, SOL_CAN_RAW, CAN_RAW_FILTER, NULL, 0);
 
 	while (1) {
-		
+
 		FD_ZERO(&rdfs);
 		FD_SET(s, &rdfs);
 		FD_SET(t, &rdfs);
@@ -193,7 +193,7 @@ int main(int argc, char **argv)
 				fprintf(stderr, "read: incomplete CAN frame\n");
 				exit(1);
 			}
-			
+
 			printf ("%08X\n", frame.can_id);
 		}
 	}

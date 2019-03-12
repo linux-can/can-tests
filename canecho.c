@@ -116,7 +116,7 @@ int main(int argc, char **argv)
 		print_usage(basename(argv[0]));
 		exit(0);
 	}
-	
+
 	printf("interface = %s, family = %d, type = %d, proto = %d\n",
 	       argv[optind], family, type, proto);
 	if ((s = socket(family, type, proto)) < 0) {

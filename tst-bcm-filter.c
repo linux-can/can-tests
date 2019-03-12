@@ -163,7 +163,7 @@ int main(int argc, char **argv)
 
 	if ((nbytes = read(s, &rxmsg, sizeof(rxmsg))) < 0)
 		perror("read");
-    
+
 	ioctl(s, SIOCGSTAMP, &tv);
 	printf("(%ld.%06ld)   ", tv.tv_sec, tv.tv_usec);
 
