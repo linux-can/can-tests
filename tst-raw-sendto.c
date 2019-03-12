@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 
 	addr.can_family  = AF_CAN;
 	addr.can_ifindex = 0; /* bind to all interfaces */
- 
+
 	if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
 		perror("bind");
 		return 1;
@@ -103,7 +103,7 @@ int main(int argc, char **argv)
 
 	addr.can_family  = AF_CAN;
 	addr.can_ifindex = ifindex; /* send via this interface */
- 
+
 	sendto(s, &frame, sizeof(struct can_frame), 0, (struct sockaddr*)&addr, sizeof(addr));
 
 	close(s);

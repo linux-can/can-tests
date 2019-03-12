@@ -32,7 +32,7 @@ then
     return 1
 fi
 
-# test of CAN filters on af_can.c 
+# test of CAN filters on af_can.c
 ./tst-filter $VCAN || return 1
 
 # test of CAN frame flow down to the netdevice and up again
@@ -43,5 +43,3 @@ echo "CAN networklayer tests succeeded."
 echo ---
 
 return 0
-
-

@@ -44,7 +44,7 @@ static __u32 last_dropcnt;
 
 static char devname[MAXIFNAMES][IFNAMSIZ+1];
 static int  dindex[MAXIFNAMES];
-static int  max_devname_len; /* to prevent frazzled device name output */ 
+static int  max_devname_len; /* to prevent frazzled device name output */
 
 int idx2dindex(int ifidx, int socket) {
 
@@ -99,7 +99,7 @@ int idx2dindex(int ifidx, int socket) {
 
 int main(int argc, char **argv)
 {
-	int s; /* can raw socket */ 
+	int s; /* can raw socket */
 	int enable_sockopt = 1;
 	struct sockaddr_can addr;
 	struct sockaddr_can addrs[VLEN];
@@ -193,7 +193,7 @@ int main(int argc, char **argv)
 
 //		iov.iov_len = sizeof(frame);
 //		msg.msg_namelen = sizeof(addr);
-//		msg.msg_controllen = sizeof(ctrlmsg);  
+//		msg.msg_controllen = sizeof(ctrlmsg);
 //		msg.msg_flags = 0;
 
 		nframes = recvmmsg(s, mmsghdrs, VLEN, MSG_WAITFORONE, NULL);
