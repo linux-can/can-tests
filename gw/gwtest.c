@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
 /*
  * A real quick'n'dirty hack to add a netlink CAN gateway entry.
  *
