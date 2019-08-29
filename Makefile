@@ -47,37 +47,39 @@ CFLAGS    = -O2 -Wall -Wno-parentheses \
 	    -fno-strict-aliasing
 
 CPPFLAGS += -Iinclude \
+	    -Ilib \
 	    -D_FILE_OFFSET_BITS=64 \
 	    -DSO_RXQ_OVFL=40 \
 	    -DETH_P_CAN=0x000C \
 	    -DPF_CAN=29 \
 	    -DAF_CAN=PF_CAN
 
-PROGRAMS = 	tst-raw		  \
-		tst-raw-filter	  \
-		tst-err		  \
-		tst-raw-sendto	  \
-		tst-packet	  \
-		tst-filter	  \
-		tst-filter-master \
-		tst-filter-server \
-		tst-rcv-own-msgs  \
-		tst-bcm-cycle 	  \
-		tst-bcmfd-cycle	  \
-		tst-bcm-tx_read	  \
-		tst-bcm-tx_delete \
-		tst-bcm-rtr	  \
-		tst-bcm-single	  \
-		tst-bcm-filter	  \
-		tst-bcmfd-filter  \
-		tst-bcm-throttle  \
-		tst-bcm-rx-sendto \
-		tst-bcm-tx-sendto \
-		tst-bcm-dump	  \
-		tst-proc	  \
-		gwtest		  \
-		canpump		  \
-		canecho
+PROGRAMS := \
+	bcm/tst-bcm-cycle \
+	bcm/tst-bcm-dump \
+	bcm/tst-bcm-filter \
+	bcm/tst-bcm-rtr \
+	bcm/tst-bcm-rx-sendto \
+	bcm/tst-bcm-single \
+	bcm/tst-bcm-throttle \
+	bcm/tst-bcm-tx-sendto \
+	bcm/tst-bcm-tx_delete \
+	bcm/tst-bcm-tx_read \
+	bcm/tst-bcmfd-cycle \
+	bcm/tst-bcmfd-filter \
+	gw/gwtest \
+	netlayer/tst-filter \
+	netlayer/tst-filter-master \
+	netlayer/tst-filter-server \
+	netlayer/tst-packet \
+	netlayer/tst-proc \
+	netlayer/tst-rcv-own-msgs \
+	raw/canecho \
+	raw/canpump \
+	raw/tst-err \
+	raw/tst-raw \
+	raw/tst-raw-filter \
+	raw/tst-raw-sendto
 
 all: $(PROGRAMS)
 
@@ -86,10 +88,10 @@ install:
 	cp -f $(PROGRAMS) $(DESTDIR)$(PREFIX)/bin
 
 clean:
-	rm -f $(PROGRAMS) *.o
+	rm -f $(PROGRAMS) */*.o
 
 distclean:
 	rm -f $(PROGRAMS) *.o *~
 
-canpump.o:	lib.h
-canpump:	canpump.o	lib.o
+raw/canpump.o: lib/lib.h
+raw/canpump: raw/canpump.o lib/lib.o
