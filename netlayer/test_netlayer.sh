@@ -1,8 +1,8 @@
 #!/bin/sh
+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
 #
 # testscript to check CAN filters and CAN frame flow in Linux network layer
 #
-# $Id$
 #
 
 if [ $(id -ru) -ne 0 ]; then
