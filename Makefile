@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
 #
 #  Copyright (c) 2002-2007 Volkswagen Group Electronic Research
 #  All rights reserved.
@@ -47,37 +48,38 @@ CFLAGS    = -O2 -Wall -Wno-parentheses \
 	    -fno-strict-aliasing
 
 CPPFLAGS += -Iinclude \
+	    -Ilib \
 	    -D_FILE_OFFSET_BITS=64 \
 	    -DSO_RXQ_OVFL=40 \
 	    -DETH_P_CAN=0x000C \
 	    -DPF_CAN=29 \
 	    -DAF_CAN=PF_CAN
 
-PROGRAMS = 	tst-raw		  \
-		tst-raw-filter	  \
-		tst-err		  \
-		tst-raw-sendto	  \
-		tst-packet	  \
-		tst-filter	  \
-		tst-filter-master \
-		tst-filter-server \
-		tst-rcv-own-msgs  \
-		tst-bcm-cycle 	  \
-		tst-bcmfd-cycle	  \
-		tst-bcm-tx_read	  \
-		tst-bcm-tx_delete \
-		tst-bcm-rtr	  \
-		tst-bcm-single	  \
-		tst-bcm-filter	  \
-		tst-bcmfd-filter  \
-		tst-bcm-throttle  \
-		tst-bcm-rx-sendto \
-		tst-bcm-tx-sendto \
-		tst-bcm-dump	  \
-		tst-proc	  \
-		gwtest		  \
-		canpump		  \
-		canecho
+PROGRAMS = 	raw/tst-raw			\
+		raw/tst-raw-filter		\
+		raw/tst-err			\
+		raw/tst-raw-sendto		\
+		raw/canpump			\
+		raw/canecho			\
+		netlayer/tst-packet		\
+		netlayer/tst-filter		\
+		netlayer/tst-filter-master	\
+		netlayer/tst-filter-server	\
+		netlayer/tst-rcv-own-msgs	\
+		netlayer/tst-proc		\
+		bcm/tst-bcm-cycle		\
+		bcm/tst-bcmfd-cycle		\
+		bcm/tst-bcm-tx_read		\
+		bcm/tst-bcm-tx_delete		\
+		bcm/tst-bcm-rtr			\
+		bcm/tst-bcm-single		\
+		bcm/tst-bcm-filter		\
+		bcm/tst-bcmfd-filter		\
+		bcm/tst-bcm-throttle		\
+		bcm/tst-bcm-rx-sendto		\
+		bcm/tst-bcm-tx-sendto		\
+		bcm/tst-bcm-dump		\
+		gw/gwtest
 
 all: $(PROGRAMS)
 
@@ -91,5 +93,4 @@ clean:
 distclean:
 	rm -f $(PROGRAMS) *.o *~
 
-canpump.o:	lib.h
-canpump:	canpump.o	lib.o
+canpump:	raw/canpump.o	lib/lib.o
