@@ -68,6 +68,7 @@ PROGRAMS := \
 	bcm/tst-bcm-tx_read \
 	bcm/tst-bcmfd-cycle \
 	bcm/tst-bcmfd-filter \
+	bcm/cansniffer \
 	drv/canfdtest \
 	gw/gwtest \
 	netlayer/tst-filter \
@@ -95,5 +96,7 @@ clean:
 distclean:
 	rm -f $(PROGRAMS) *.o *~
 
+bcm/cansniffer.o: lib/lib.h
+bcm/cansniffer: bcm/cansniffer.o lib/lib.o
 raw/canpump.o: lib/lib.h
 raw/canpump: raw/canpump.o lib/lib.o
