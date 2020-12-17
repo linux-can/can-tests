@@ -82,6 +82,7 @@ PROGRAMS := \
 	raw/tst-err \
 	raw/tst-raw \
 	raw/tst-raw-filter \
+	raw/tst-raw-sockopt \
 	raw/tst-raw-sendto
 
 all: $(PROGRAMS)
