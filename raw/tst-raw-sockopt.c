@@ -56,7 +56,7 @@
 #include <linux/can/raw.h>
 
 #define MAXFILTERS 32
-#define FSZ sizeof(struct can_filter)
+#define FSZ ((socklen_t)sizeof(struct can_filter))
 
 #define MAXSZ (MAXFILTERS * FSZ)
 
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 
 	errno = 0;
 	ret = setsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, RIGHTSZ);
-	printf("setsockopt: write %ld byte -> %s\n", RIGHTSZ, strerror(errno));
+	printf("setsockopt: write %u byte -> %s\n", RIGHTSZ, strerror(errno));
 
 	if (ret < 0) {
 		printf("setsockopt: Unexpected error %s\n", strerror(errno));
@@ -91,10 +91,10 @@ int main(int argc, char **argv)
 	optlen = RIGHTSZ;
 	errno = 0;
 	ret = getsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, &optlen);
-	printf("getsockopt1: read %ld byte into %ld byte buffer -> %s\n", RIGHTSZ, RIGHTSZ, strerror(errno));
+	printf("getsockopt1: read %u byte into %u byte buffer -> %s\n", RIGHTSZ, RIGHTSZ, strerror(errno));
 
 	if (optlen != RIGHTSZ)
-		printf("getsockopt1: optlen %d expected %ld\n", optlen, RIGHTSZ);
+		printf("getsockopt1: optlen %u expected %u\n", optlen, RIGHTSZ);
 
 	if (ret < 0) {
 		printf("getsockopt1: Unexpected error %s\n", strerror(errno));
@@ -105,10 +105,10 @@ int main(int argc, char **argv)
 	optlen = MORESZ;
 	errno = 0;
 	ret = getsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, &optlen);
-	printf("getsockopt2: read %ld byte into %ld byte buffer -> %s\n", RIGHTSZ, MORESZ, strerror(errno));
+	printf("getsockopt2: read %u byte into %u byte buffer -> %s\n", RIGHTSZ, MORESZ, strerror(errno));
 
 	if (optlen != RIGHTSZ)
-		printf("getsockopt2: optlen %d expected %ld\n", optlen, RIGHTSZ);
+		printf("getsockopt2: optlen %u expected %u\n", optlen, RIGHTSZ);
 
 	if (ret < 0) {
 		printf("getsockopt2: Unexpected error %s\n", strerror(errno));
@@ -119,13 +119,13 @@ int main(int argc, char **argv)
 	optlen = LESSSZ;
 	errno = 0;
 	ret = getsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, &optlen);
-	printf("getsockopt3: read %ld byte into %ld byte buffer -> %s\n", RIGHTSZ, LESSSZ, strerror(errno));
+	printf("getsockopt3: read %u byte into %u byte buffer -> %s\n", RIGHTSZ, LESSSZ, strerror(errno));
 
 	/* old behaviour: the kernel silently truncated the filterset to LESSSZ */
 	if (ret == 0) {
 		if (optlen != LESSSZ) {
 			/* the buffer should be filled up completely */
-			printf("getsockopt3: optlen %d expected %ld\n", optlen, LESSSZ);
+			printf("getsockopt3: optlen %u expected %u\n", optlen, LESSSZ);
 			return 1;
 		}
 
@@ -144,17 +144,17 @@ int main(int argc, char **argv)
 	/* -ERANGE -> the needed length was returned in optlen */
 	if (optlen != RIGHTSZ) {
 		/* the kernel should have returned RIGHTSZ in optlen */
-		printf("getsockopt3: optlen %d expected %ld\n", optlen, RIGHTSZ);
+		printf("getsockopt3: optlen %u expected %u\n", optlen, RIGHTSZ);
 		return 1;
 	}
 
 	/* retry with returned optlen value */
 	errno = 0;
 	ret = getsockopt(s, SOL_CAN_RAW, CAN_RAW_FILTER, &rfilter, &optlen);
-	printf("getsockopt4: read %ld byte into %ld byte buffer -> %s\n", RIGHTSZ, RIGHTSZ, strerror(errno));
+	printf("getsockopt4: read %u byte into %u byte buffer -> %s\n", RIGHTSZ, RIGHTSZ, strerror(errno));
 
 	if (optlen != RIGHTSZ)
-		printf("getsockopt4: optlen %d expected %ld\n", optlen, RIGHTSZ);
+		printf("getsockopt4: optlen %u expected %u\n", optlen, RIGHTSZ);
 
 	if (ret < 0) {
 		printf("getsockopt4: Unexpected error %s\n", strerror(errno));
