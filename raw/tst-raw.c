@@ -66,6 +66,7 @@ int main(int argc, char **argv)
 	char *ifname = "vcan2";
 	int ifindex;
 	int opt;
+	struct timeval tv;
 
 	/* sockopt test */
 	int loopback = 0;
@@ -161,6 +162,11 @@ int main(int argc, char **argv)
 			fprintf(stderr, "read: incomplete CAN frame\n");
 			return 1;
 		} else {
+			if (ioctl(s, SIOCGSTAMP, &tv) < 0)
+				perror("SIOCGSTAMP");
+			else
+				printf("(%ld.%06ld) ", tv.tv_sec, tv.tv_usec);
+
 			if (frame.can_id & CAN_EFF_FLAG)
 				printf("%8X  ", frame.can_id & CAN_EFF_MASK);
 			else
