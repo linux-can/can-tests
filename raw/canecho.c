@@ -153,7 +153,10 @@ int main(int argc, char **argv)
 			printf("\n");
 		}
 		frame.can_id++;
-		write(s, &frame, sizeof(frame));
+		if (write(s, &frame, sizeof(frame)) < 0) {
+			perror("write");
+			exit(1);
+		}
 	}
 
 	return 0;
