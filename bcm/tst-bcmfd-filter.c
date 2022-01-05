@@ -55,7 +55,7 @@
 
 #include <linux/can.h>
 #include <linux/can/bcm.h>
-
+#include <linux/sockios.h>
 
 #define U64_DATA(p) (*(unsigned long long*)p)
 #define MHSIZ sizeof(struct bcm_msg_head)

@@ -36,6 +36,7 @@
 
 #include <linux/can.h>
 #include <linux/can/bcm.h>
+#include <linux/sockios.h>
 
 #define DEFAULT_IFACE "vcan0"
 #define DEFAULT_CANID 0x42

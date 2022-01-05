@@ -55,6 +55,7 @@
 
 #include <linux/can.h>
 #include <linux/can/bcm.h>
+#include <linux/sockios.h>
 
 int main(int argc, char **argv)
 {
