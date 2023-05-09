@@ -83,7 +83,8 @@ PROGRAMS := \
 	raw/tst-raw \
 	raw/tst-raw-filter \
 	raw/tst-raw-sockopt \
-	raw/tst-raw-sendto
+	raw/tst-raw-sendto \
+	j1939/tst-j1939-ac
 
 J1939 := \
 	j1939/j1939_ac_100k_dual_can.sh \
