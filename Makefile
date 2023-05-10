@@ -85,11 +85,24 @@ PROGRAMS := \
 	raw/tst-raw-sockopt \
 	raw/tst-raw-sendto
 
+J1939 := \
+	j1939/j1939_ac_100k_dual_can.sh \
+	j1939/j1939_ac_100k_local0.sh \
+	j1939/j1939_ac_1k_bam_local0.sh \
+	j1939/j1939_ac_1k_local0.sh \
+	j1939/j1939_ac_1m_local0.sh \
+	j1939/j1939_ac_8b_local0.sh \
+	j1939/j1939_multisock_dualack_100k.sh \
+	j1939/j1939_multisock_dualack_1k.sh \
+	j1939/j1939_multisock_timeout_100k.sh \
+	j1939/run_all.sh
+
 all: $(PROGRAMS)
 
 install:
-	mkdir -p $(DESTDIR)$(PREFIX)/bin
+	mkdir -p $(DESTDIR)$(PREFIX)/bin $(DESTDIR)$(PREFIX)/lib/can-tests/j1939
 	cp -f $(PROGRAMS) $(DESTDIR)$(PREFIX)/bin
+	cp -f $(J1939) $(DESTDIR)$(PREFIX)/lib/can-tests/j1939
 
 clean:
 	rm -f $(PROGRAMS) */*.o
