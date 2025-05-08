@@ -59,7 +59,6 @@ int main(int argc, char **argv)
 	struct sockaddr_can addr;
 	int nbytes;
 	int i;
-	struct ifreq ifr;
 	char *ifname = DEFAULT_IFACE;
 	canid_t canid = DEFAULT_CANID;
 	int opt;
@@ -116,14 +115,8 @@ int main(int argc, char **argv)
 
 	if (strcmp(ifname, "any") == 0)
 		addr.can_ifindex = 0;
-	else {
-		strcpy(ifr.ifr_name, ifname);
-		if (ioctl(s, SIOCGIFINDEX, &ifr) < 0) {
-			perror("SIOCGIFINDEX");
-			return 1;
-		}
-		addr.can_ifindex = ifr.ifr_ifindex;
-	}
+	else
+		addr.can_ifindex = if_nametoindex(ifname);
 
 	addr.can_family = PF_CAN;
 

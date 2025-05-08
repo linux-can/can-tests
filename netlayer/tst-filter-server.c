@@ -96,9 +96,6 @@ int main(int argc, char **argv)
 	struct can_frame frame;
 	int testcase = 0;
 	int nbytes, ret;
-	struct ifreq ifr;
-	int ifindex;
-
 
 	if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
 		perror("socket");
@@ -109,12 +106,8 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	strcpy(ifr.ifr_name, "vcan0");
-	ioctl(s, SIOCGIFINDEX, &ifr);
-	ifindex = ifr.ifr_ifindex;
-
 	addr.can_family = AF_CAN;
-	addr.can_ifindex = ifindex;
+	addr.can_ifindex = if_nametoindex("vcan0");
 
 	if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
 		perror("bind");

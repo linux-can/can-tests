@@ -104,7 +104,6 @@ int main(int argc, char **argv)
 	int enable_sockopt = 1;
 	struct sockaddr_can addr;
 	struct sockaddr_can addrs[VLEN];
-	struct ifreq ifr;
 
 	char ctrlmsgs[VLEN][CMSG_SPACE(sizeof(struct timeval)) + CMSG_SPACE(sizeof(__u32))];
 	struct cmsghdr *cmsg;
@@ -131,15 +130,9 @@ int main(int argc, char **argv)
 
 	addr.can_family = AF_CAN;
 
-	strcpy(ifr.ifr_name, argv[1]);
-
-	if (strcmp(ANYDEV, ifr.ifr_name)) {
-		if (ioctl(s, SIOCGIFINDEX, &ifr) < 0) {
-			perror("SIOCGIFINDEX");
-			exit(1);
-		}
-		addr.can_ifindex = ifr.ifr_ifindex;
-	} else
+	if (strcmp(ANYDEV, argv[1]))
+		addr.can_ifindex = if_nametoindex(argv[1]);
+	else
 		addr.can_ifindex = 0; /* any can interface */
 
 	/* try to switch the socket into CAN FD mode */

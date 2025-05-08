@@ -60,9 +60,7 @@ int main(int argc, char **argv)
 	int s;
 	struct sockaddr_can addr;
 	struct can_frame frame;
-	struct ifreq ifr;
 	char *ifname = "vcan2";
-	int ifindex;
 	int opt;
 
 	while ((opt = getopt(argc, argv, "i:")) != -1) {
@@ -82,10 +80,6 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	strcpy(ifr.ifr_name, ifname);
-	ioctl(s, SIOCGIFINDEX, &ifr);
-	ifindex = ifr.ifr_ifindex;
-
 	addr.can_family  = AF_CAN;
 	addr.can_ifindex = 0; /* bind to all interfaces */
 
@@ -103,7 +97,7 @@ int main(int argc, char **argv)
 	frame.data[2] = 0x33;
 
 	addr.can_family  = AF_CAN;
-	addr.can_ifindex = ifindex; /* send via this interface */
+	addr.can_ifindex = if_nametoindex(ifname); /* send via this interface */
 
 	sendto(s, &frame, sizeof(struct can_frame), 0, (struct sockaddr*)&addr, sizeof(addr));
 

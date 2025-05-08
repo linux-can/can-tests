@@ -65,9 +65,7 @@ int main(int argc, char **argv)
 	struct can_frame frame;
 	can_err_mask_t err_mask = CAN_ERR_MASK; /* all */
 	int nbytes;
-	struct ifreq ifr;
 	char *ifname = "vcan2";
-	int ifindex;
 	int opt;
 	struct timeval tv;
 
@@ -97,12 +95,8 @@ int main(int argc, char **argv)
 
 	setsockopt(s, SOL_CAN_RAW, CAN_RAW_ERR_FILTER, &err_mask, sizeof(err_mask));
 
-	strcpy(ifr.ifr_name, ifname);
-	ioctl(s, SIOCGIFINDEX, &ifr);
-	ifindex = ifr.ifr_ifindex;
-
 	addr.can_family = AF_CAN;
-	addr.can_ifindex = ifindex;
+	addr.can_ifindex = if_nametoindex(ifname);
 
 	if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
 		perror("bind");

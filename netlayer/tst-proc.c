@@ -62,7 +62,6 @@ int main(int argc, char **argv)
 {
 	int s[MAX_RAW];
 	struct sockaddr_can addr;
-	struct ifreq ifr;
 	int i,numsock;
 
 	if (argc != 2) {
@@ -87,9 +86,7 @@ int main(int argc, char **argv)
 			}
 
 			addr.can_family = PF_CAN;
-			strcpy(ifr.ifr_name, "vcan2");
-			ioctl(s[i], SIOCGIFINDEX, &ifr);
-			addr.can_ifindex = ifr.ifr_ifindex;
+			addr.can_ifindex = if_nametoindex("vcan2");
 
 			if (bind(s[i], (struct sockaddr *)&addr, sizeof(addr)) < 0) {
 				perror("connect");

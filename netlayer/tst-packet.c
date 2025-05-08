@@ -67,7 +67,6 @@ int main(int argc, char **argv)
 	int s;
 	struct can_frame frame;
 	int nbytes, i;
-	static struct ifreq ifr;
 	static struct sockaddr_ll sll;
 	char *ifname = "vcan2";
 	int ifindex;
@@ -99,11 +98,8 @@ int main(int argc, char **argv)
 
 	if (strcmp(ifname, "any") == 0)
 		ifindex = 0;
-	else {
-		strcpy(ifr.ifr_name, ifname);
-		ioctl(s, SIOCGIFINDEX, &ifr);
-		ifindex = ifr.ifr_ifindex;
-	}
+	else
+		ifindex = if_nametoindex(ifname);
 
 	sll.sll_family   = AF_PACKET;
 	sll.sll_ifindex  = ifindex;

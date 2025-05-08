@@ -63,21 +63,14 @@ int main(int argc, char **argv)
 	struct can_frame frame;
 	int testcase;
 	int nbytes;
-	struct ifreq ifr;
-	int ifindex;
-
 
 	if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0) {
 		perror("socket");
 		return 1;
 	}
 
-	strcpy(ifr.ifr_name, "vcan0");
-	ioctl(s, SIOCGIFINDEX, &ifr);
-	ifindex = ifr.ifr_ifindex;
-
 	addr.can_family = AF_CAN;
-	addr.can_ifindex = ifindex;
+	addr.can_ifindex = if_nametoindex("vcan0");
 
 	rfilter.can_id   = 0xFA; /* receive only the filter ack */
 	rfilter.can_mask = CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG;

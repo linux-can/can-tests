@@ -62,7 +62,6 @@ int main(int argc, char **argv)
 	int s,nbytes;
 	struct sockaddr_can addr;
 	struct ifreq ifr;
-
 	struct timeval tv;
 
 	struct {
@@ -93,9 +92,7 @@ int main(int argc, char **argv)
 		perror("write");
 
 	addr.can_family = PF_CAN;
-	strcpy(ifr.ifr_name, "vcan2");
-	ioctl(s, SIOCGIFINDEX, &ifr);
-	addr.can_ifindex = ifr.ifr_ifindex;
+	addr.can_ifindex = if_nametoindex("vcan2");
 
 	txmsg.msg_head.opcode  = RX_SETUP;
 	txmsg.msg_head.can_id  = 0x321;
@@ -105,9 +102,7 @@ int main(int argc, char **argv)
 		perror("sendto");
 
 	addr.can_family = PF_CAN;
-	strcpy(ifr.ifr_name, "vcan1");
-	ioctl(s, SIOCGIFINDEX, &ifr);
-	addr.can_ifindex = ifr.ifr_ifindex;
+	addr.can_ifindex = if_nametoindex("vcan1");
 
 	txmsg.msg_head.opcode  = RX_SETUP;
 	txmsg.msg_head.can_id  = 0x424;

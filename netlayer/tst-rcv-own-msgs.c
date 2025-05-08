@@ -150,7 +150,6 @@ int main(int argc, char **argv)
 {
 	int s, t;
 	struct sockaddr_can addr;
-	struct ifreq ifr;
 	struct rxs rx;
 
 	/* check command line options */
@@ -168,12 +167,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	strcpy(ifr.ifr_name, argv[1]);
-	if (ioctl(s, SIOCGIFINDEX, &ifr) < 0) {
-		perror("SIOCGIFINDEX");
-		return 1;
-	}
-	addr.can_ifindex = ifr.ifr_ifindex;
+	addr.can_ifindex = if_nametoindex(argv[1]);
 	addr.can_family = AF_CAN;
 
 	if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {

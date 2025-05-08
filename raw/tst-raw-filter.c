@@ -66,7 +66,6 @@ int main(int argc, char **argv)
 	int nbytes, i;
 	struct ifreq ifr;
 	char *ifname = "any";
-	int ifindex;
 	int opt;
 	int peek = 0;
 	int nfilters = 0;
@@ -113,15 +112,11 @@ int main(int argc, char **argv)
 	}
 
 	if (strcmp(ifname, "any") == 0)
-		ifindex = 0;
-	else {
-		strcpy(ifr.ifr_name, ifname);
-		ioctl(s, SIOCGIFINDEX, &ifr);
-		ifindex = ifr.ifr_ifindex;
-	}
+		addr.can_ifindex = 0;
+	else
+		addr.can_ifindex = if_nametoindex(ifname);
 
 	addr.can_family = AF_CAN;
-	addr.can_ifindex = ifindex;
 
 	if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
 		perror("bind");

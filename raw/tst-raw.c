@@ -63,9 +63,7 @@ int main(int argc, char **argv)
 	struct can_filter rfilter[4];
 	struct can_frame frame;
 	int nbytes, i;
-	struct ifreq ifr;
 	char *ifname = "vcan2";
-	int ifindex;
 	int opt;
 	struct timeval tv;
 
@@ -131,12 +129,8 @@ int main(int argc, char **argv)
 	if(set_recv_own_msgs)
 		setsockopt(s, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS, &recv_own_msgs, sizeof(recv_own_msgs));
 
-	strcpy(ifr.ifr_name, ifname);
-	ioctl(s, SIOCGIFINDEX, &ifr);
-	ifindex = ifr.ifr_ifindex;
-
 	addr.can_family = AF_CAN;
-	addr.can_ifindex = ifindex;
+	addr.can_ifindex = if_nametoindex(ifname);
 
 	if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
 		perror("bind");

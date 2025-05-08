@@ -103,7 +103,6 @@ int main(int argc, char **argv)
 	int rxbits, rxbitval;
 	int ret;
 	int recv_own_msgs = 1;
-	struct ifreq ifr;
 
 	/* check command line options */
 	if (argc != 2) {
@@ -116,13 +115,8 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	strcpy(ifr.ifr_name, argv[1]);
-	if (ioctl(s, SIOCGIFINDEX, &ifr) < 0) {
-		perror("SIOCGIFINDEX");
-		return 1;
-	}
 	addr.can_family = AF_CAN;
-	addr.can_ifindex = ifr.ifr_ifindex;
+	addr.can_ifindex = if_nametoindex(argv[1]);
 
 	setsockopt(s, SOL_CAN_RAW, CAN_RAW_RECV_OWN_MSGS,
 		   &recv_own_msgs, sizeof(recv_own_msgs));
