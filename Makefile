@@ -64,8 +64,8 @@ PROGRAMS := \
 	bcm/tst-bcm-single \
 	bcm/tst-bcm-throttle \
 	bcm/tst-bcm-tx-sendto \
-	bcm/tst-bcm-tx_delete \
-	bcm/tst-bcm-tx_read \
+	bcm/tst-bcm-tx-delete \
+	bcm/tst-bcm-tx-read \
 	bcm/tst-bcmfd-cycle \
 	bcm/tst-bcmfd-filter \
 	bcm/cansniffer \
