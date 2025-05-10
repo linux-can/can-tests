@@ -57,6 +57,7 @@ CPPFLAGS += -Iinclude \
 
 PROGRAMS := \
 	bcm/tst-bcm-cycle \
+	bcm/tst-bcm-nframes \
 	bcm/tst-bcm-dump \
 	bcm/tst-bcm-filter \
 	bcm/tst-bcm-rtr \
